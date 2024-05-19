@@ -1,0 +1,3 @@
+# uni_ai_chat_HoshinoBot
+
+适用于HoshinoBot的统一AI对话插件。为避免类似openai0.x和1.x的兼容性问题，目标是全部通过HTTP接口实现
