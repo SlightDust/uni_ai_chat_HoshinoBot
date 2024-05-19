@@ -1,13 +1,17 @@
-import sys, os
 import asyncio
-_current_dir = os.path.dirname(__file__)
-if _current_dir not in sys.path:
-    sys.path.insert(0, _current_dir)
 
-import aiorequests
-
-from config import zhipu_Config
-from base_chat import aichat
+try:
+    from .config import zhipu_Config
+    from .base_chat import aichat
+    from hoshino import aiorequests
+except ImportError:
+    import sys, os
+    _current_dir = os.path.dirname(__file__)
+    if _current_dir not in sys.path:
+        sys.path.insert(0, _current_dir)
+    from config import zhipu_Config
+    from base_chat import aichat
+    import aiorequests
 
 class Zhipu(aichat):
     header: dict
