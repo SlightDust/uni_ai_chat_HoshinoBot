@@ -21,9 +21,10 @@ class Zhipu(aichat):
     completion_tokens: int
     prompt_tokens: int
     total_tokens: int
-    config = zhipu_Config()
+    config: zhipu_Config
     
     def __init__(self):
+        self.config = zhipu_Config()
         self.headers = {
             'Authorization': f'Bearer {self.config.api_key}',
             'Content-Type': 'application/json'
@@ -38,6 +39,7 @@ class Zhipu(aichat):
                 },
             ],
             'max_tokens': self.config.max_tokens,
+            'temperature': self.config.temperature,
         }
         if self.config.system:
             self.data['messages'].insert(0, {'role':'system','content': f'{self.config.system}'})

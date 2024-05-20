@@ -52,8 +52,16 @@ class zhipu_Config(Config):
 class azure_openai_Config(Config):
     def __init__(self):
         super().__init__()
-        self.api_base = self._config.get('azure_openai', 'api_base')
+        self.api_end_point = self._config.get('azure_openai', 'api_end_point')
+        self.deply_name = self._config.get('azure_openai', 'deply_name')
+        self.api_version = self._config.get('azure_openai', 'api_version')
         self.api_key = self._config.get('azure_openai', 'api_key')
+        self.max_tokens = self._int(self._config.get('azure_openai','max_tokens'))
+        self.temperature = self._float(self._config.get('azure_openai', 'temperature', fallback=0.9))
+        self.system = self._config.get('azure_openai','system')
+        
+
+
 
 class bianxieai_openai_Config(Config):
     def __init__(self):
