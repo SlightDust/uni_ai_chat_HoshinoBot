@@ -49,6 +49,18 @@ class zhipu_Config(Config):
         self.system = self._config.get('zhipu','system')
         self.use_web_search = self._config.getboolean('zhipu', 'use_web_search', fallback=True)
 
+class azure_openai_Config(Config):
+    def __init__(self):
+        super().__init__()
+        self.api_base = self._config.get('azure_openai', 'api_base')
+        self.api_key = self._config.get('azure_openai', 'api_key')
+
+class bianxieai_openai_Config(Config):
+    def __init__(self):
+        super().__init__()
+        self.api_base = self._config.get('bianxieai_openai', 'api_base')
+        self.api_key = self._config.get('bianxieai_openai', 'api_key')
+
 
 if __name__ == '__main__':
     config = zhipu_Config()
