@@ -22,7 +22,7 @@ class aichat:
         if uid not in data[gid][api]:
             data[gid][api][uid] = 0
         data[gid][api][uid] += cost
-        data[gid][api]['total'] = sum(data[gid][api].values())
+        data[gid][api]['total'] = sum(value for key, value in data[gid][api].items() if key != 'total')
         with open(token_cost_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
