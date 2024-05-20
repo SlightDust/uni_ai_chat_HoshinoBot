@@ -14,7 +14,7 @@ except ImportError:
     import aiorequests
 
 class Zhipu(aichat):
-    header: dict
+    headers: dict
     data: dict
     response: str
     usage: dict
