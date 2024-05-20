@@ -59,8 +59,6 @@ class azure_openai_Config(Config):
         self.max_tokens = self._int(self._config.get('azure_openai','max_tokens'))
         self.temperature = self._float(self._config.get('azure_openai', 'temperature', fallback=0.9))
         self.system = self._config.get('azure_openai','system')
-        
-
 
 
 class bianxieai_openai_Config(Config):
@@ -69,6 +67,10 @@ class bianxieai_openai_Config(Config):
         self.api_base = self._config.get('bianxieai_openai', 'api_base')
         self.api_key = self._config.get('bianxieai_openai', 'api_key')
 
+
+class ernie_Config(Config):
+    def __init__(self):
+        super().__init__()
 
 if __name__ == '__main__':
     config = zhipu_Config()
