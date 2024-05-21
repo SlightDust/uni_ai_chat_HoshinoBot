@@ -14,13 +14,6 @@ except ImportError:
     import aiorequests
 
 class Azure_openai(aichat):
-    headers: dict
-    data: dict
-    response: str
-    usage: dict
-    completion_tokens: int
-    prompt_tokens: int
-    total_tokens: int = 0
     finish_reason: str
     config: azure_openai_Config
 
@@ -97,15 +90,6 @@ class Azure_openai(aichat):
 
         await self.token_cost_record(gid, uid, self.total_tokens, 'azure_openai')
         return resp_j
-    
-    @property
-    def get_response(self):
-        return self.response.strip()
-    
-    @property
-    def get_usage(self):
-        return self.total_tokens
-
 
 if __name__ == '__main__':
 
@@ -113,8 +97,8 @@ if __name__ == '__main__':
         print("Task 1 is running")
         aopenai = Azure_openai()
         await aopenai.asend('请介绍一下日本赛马东海帝皇', 112233445566, 1)
-        print(aopenai.get_response)
-        print(aopenai.get_usage)
+        print(aopenai.get_response())
+        print(aopenai.get_usage())
         print("Task 1 completed")
 
     async def main():

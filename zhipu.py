@@ -14,13 +14,6 @@ except ImportError:
     import aiorequests
 
 class Zhipu(aichat):
-    headers: dict
-    data: dict
-    response: str
-    usage: dict
-    completion_tokens: int
-    prompt_tokens: int
-    total_tokens: int
     config: zhipu_Config
     
     def __init__(self):
@@ -63,21 +56,13 @@ class Zhipu(aichat):
         await self.token_cost_record(gid, uid, self.total_tokens, 'zhipu')
         return resp_j
 
-    @property
-    def get_response(self):
-        return self.response
-    
-    @property
-    def get_usage(self):
-        return self.total_tokens
-
 if __name__ == '__main__':
     async def task1():
         print("Task 1 is running")
         zhipu = Zhipu()
         await zhipu.asend('介绍一下东海帝王', 112233445566, 1)
-        print(zhipu.get_response)
-        print(zhipu.get_usage)
+        print(zhipu.get_response())
+        print(zhipu.get_usage())
         print("Task 1 completed")
 
     async def main():

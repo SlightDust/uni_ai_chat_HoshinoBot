@@ -14,13 +14,6 @@ except ImportError:
     import aiorequests
 
 class Ernie(aichat):
-    headers: dict
-    data: dict
-    response: str
-    usage: dict
-    completion_tokens: int
-    prompt_tokens: int
-    total_tokens: int
     config: ernie_Config
 
     def __init__(self):
@@ -30,11 +23,3 @@ class Ernie(aichat):
     async def asend(self, msg, gid, uid):
         self.data = {
         }
-        
-    @property
-    def get_response(self):
-        return self.response
-    
-    @property
-    def get_usage(self):
-        return self.total_tokens
