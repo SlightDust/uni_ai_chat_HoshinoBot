@@ -48,6 +48,13 @@ class Zhipu(aichat):
         resp = await aiorequests.post(f'{self.config.api_base}', headers=self.headers, json=self.data)
         resp_j = await resp.json()
         print(resp_j)
+        if "error" in resp_j.keys():
+            # 发生错误
+            # 智谱的错误信息是汉语，就不画蛇添足了，直接返回。https://open.bigmodel.cn/dev/api#error-code-v3
+            error_code = resp_j['error']['code']
+            error_message = resp_j['error']['message']
+            self.response = f"发生错误:\ncode: {error_code}\n{error_message}"
+            return resp_j
         self.response = resp_j['choices'][0]['message']['content']
         self.usage = resp_j['usage']
         self.completion_tokens = int(resp_j['usage']['completion_tokens'])
