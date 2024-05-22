@@ -41,7 +41,6 @@ class Config:
 class zhipu_Config(Config):
     def __init__(self):
         super().__init__()
-        self.api_base = self._config.get('zhipu', 'api_base')
         self.api_key = self._config.get('zhipu', 'api_key')
         self.model = self._config.get('zhipu','model')
         self.max_tokens = self._int(self._config.get('zhipu','max_tokens'))

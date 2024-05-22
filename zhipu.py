@@ -23,6 +23,7 @@ class Zhipu(aichat):
             'Content-Type': 'application/json'
         }
     async def asend(self, msg, gid, uid):
+        url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
         self.data = {
             'model': self.config.model,
             'messages': [
@@ -38,7 +39,7 @@ class Zhipu(aichat):
             self.data['messages'].insert(0, {'role':'system','content': f'{self.config.system}'})
         if not self.config.use_web_search:
             self.data['tools']= [{'type':'web_search','web_search':{'enable': False}}]
-        resp = await aiorequests.post(f'{self.config.api_base}', headers=self.headers, json=self.data)
+        resp = await aiorequests.post(f'{url}', headers=self.headers, json=self.data)
         resp_j = await resp.json()
         print(resp_j)
         if "error" in resp_j.keys():
