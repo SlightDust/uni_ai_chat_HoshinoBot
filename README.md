@@ -1,6 +1,6 @@
 # uni_ai_chat_HoshinoBot
 
-适用于HoshinoBot的统一AI对话插件。为避免类似openai0.x和1.x的兼容性问题，目标是全部通过 HTTP / Restful 接口实现
+适用于HoshinoBot的统一AI对话插件，会尽可能多的整合常见的AI问答API。为避免类似openai0.x和1.x的兼容性问题，目标是不依赖SDK，全部通过 HTTP / Restful 接口实现。
 
 
 
