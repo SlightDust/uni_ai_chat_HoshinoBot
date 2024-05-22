@@ -38,7 +38,8 @@ class Azure_openai(aichat):
                 },
             ],
             'max_tokens': self.config.max_tokens,
-            # 'temperature': self.config.temperature,
+            'temperature': self.config.temperature,
+            'top_p': self.config.top_p,
         }
         if self.config.system:
             self.data['messages'].insert(0, {'role':'system','content': f'{self.config.system}'})
