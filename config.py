@@ -45,6 +45,7 @@ class zhipu_Config(Config):
         self.model = self._config.get('zhipu','model')
         self.max_tokens = self._int(self._config.get('zhipu','max_tokens'))
         self.temperature = self._float(self._config.get('zhipu', 'temperature', fallback=0.9))
+        self.top_p = self._float(self._config.get('zhipu', 'top_p', fallback=0.7))
         self.system = self._config.get('zhipu','system')
         self.use_web_search = self._config.getboolean('zhipu', 'use_web_search', fallback=True)
 
@@ -57,6 +58,7 @@ class azure_openai_Config(Config):
         self.api_key = self._config.get('azure_openai', 'api_key')
         self.max_tokens = self._int(self._config.get('azure_openai','max_tokens'))
         self.temperature = self._float(self._config.get('azure_openai', 'temperature', fallback=0.9))
+        self.top_p = self._float(self._config.get('azure_openai', 'top_p', fallback=0.7))
         self.system = self._config.get('azure_openai','system')
 
 
@@ -70,7 +72,19 @@ class bianxieai_openai_Config(Config):
 class ernie_Config(Config):
     def __init__(self):
         super().__init__()
+        self.model = self._config.get('ernie','model')
+        self.api_key = self._config.get('ernie', 'api_key')
+        self.secret_key = self._config.get('ernie','secret_key')
+        self.auth_method = self._config.get('ernie', 'auth_method')
+        self.client_id = self.api_key
+        self.client_secret = self.secret_key
+        self.temperature = self._float(self._config.get('ernie', 'temperature', fallback=0.95))
+        self.top_p = self._float(self._config.get('ernie', 'top_p', fallback=0.7))
+        self.penalty_score = self._float(self._config.get('ernie', 'penalty_score', fallback=1))
+        self.max_tokens = self._int(self._config.get('ernie','max_output_tokens'))
+        self.max_output_tokens = self.max_tokens
+        self.system = self._config.get('ernie','system')
 
 if __name__ == '__main__':
     config = zhipu_Config()
-    print(config.use_web_search)
+    print(config.top_p)
