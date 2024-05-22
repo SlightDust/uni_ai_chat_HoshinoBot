@@ -20,6 +20,7 @@ class Ernie(aichat):
     is_get_access_token: bool = False
     error_message: str = ""
     need_clear_history: bool = False
+    free_mode: bool = True
 
     def __init__(self):
         self.config = ernie_Config()
@@ -32,7 +33,8 @@ class Ernie(aichat):
             return False
 
         if self.config.auth_method == "access_token":
-            url = f"https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/{self.config.model}?access_token={self.access_token}"
+            model = self.config.free_model if self.free_mode else self.config.model
+            url = f"https://aip.baidubce.com/rpc/2.0/ai_custom/v1/wenxinworkshop/chat/{model}?access_token={self.access_token}"
             self.data = json.dumps({
                 "messages":[
                     {
@@ -46,6 +48,9 @@ class Ernie(aichat):
                 "system": self.config.system,
                 "max_output_tokens": self.config.max_output_tokens,
                 "user_id": str(uid),
+                # 下面两个参数是3.5和4的websearch的返回参考资料标记
+                "enable_citation": self.config.enable_citation,
+                "enable_trace": self.config.enable_trace
             })
             self.headers = {
                 'Content-Type': 'application/json'
@@ -71,6 +76,17 @@ class Ernie(aichat):
             if resp_j['need_clear_history']:
                 self.need_clear_history = True
                 self.response += "\n\n警告：输出被标记为存在安全风险，需要清理历史会话，请自行判断。该内容将在60秒后被撤回。"
+            
+            # 下面两个在ernie-3.5和ernie-4.0中有
+            if 'finish_reason' in resp_j and resp_j['finish_reason'] != 'normal':
+                self.response += f"......\n\n输出已被截断，原因：{resp_j['finish_reason']}。"
+
+            if 'search_info' in resp_j:
+                search_response = "参考资料：\n"
+                search_results = resp_j['search_info']['search_results']
+                for search_result in search_results:
+                    search_response += f"{search_result['index']}. {search_result['title']} ({search_result['url']})\n"
+                self.response += f"\n\n{search_response}"
 
             await self.token_cost_record(gid, uid, self.total_tokens, 'ernie')
             return resp_j
@@ -106,7 +122,8 @@ if __name__ == '__main__':
     async def task1():
         print("Task 1 is running")
         ernie = Ernie()
-        if (await ernie.asend('介绍一下日本赛马青云天空', 112233445566, 1)):
+        ernie.free_mode = False
+        if (await ernie.asend('“鲁道夫象征写出了能笑死人的冷笑话”是什么梗', 112233445566, 1)):
             print(ernie.response)
             print('\n')
             print(ernie.total_tokens)

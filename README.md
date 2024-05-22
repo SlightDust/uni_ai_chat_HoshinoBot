@@ -8,7 +8,7 @@
 ### 已适配：
 - [Azure OpenAI（国际版Azure）](https://portal.azure.com/)   
 - [智谱清言（智谱AI）](https://www.zhipuai.cn)
-- [ernie-bot（文心一言，百度千帆大模型）](https://console.bce.baidu.com/qianfan/)
+- [ernie-bot（文心一言，百度千帆大模型）](https://console.bce.baidu.com/qianfan/)（免费版和付费版）
 
 ### 适配中
 - [便携AI转发的OpenAI](https://api.bianxieai.com/)

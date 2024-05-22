@@ -72,6 +72,7 @@ class bianxieai_openai_Config(Config):
 class ernie_Config(Config):
     def __init__(self):
         super().__init__()
+        self.free_model = self._config.get('ernie','free_model')
         self.model = self._config.get('ernie','model')
         self.api_key = self._config.get('ernie', 'api_key')
         self.secret_key = self._config.get('ernie','secret_key')
@@ -84,6 +85,8 @@ class ernie_Config(Config):
         self.max_tokens = self._int(self._config.get('ernie','max_output_tokens'))
         self.max_output_tokens = self.max_tokens
         self.system = self._config.get('ernie','system')
+        self.enable_citation = self._config.getboolean('ernie', 'enable_citation')
+        self.enable_trace = self._config.getboolean('ernie', 'enable_trace')
 
 if __name__ == '__main__':
     config = zhipu_Config()
