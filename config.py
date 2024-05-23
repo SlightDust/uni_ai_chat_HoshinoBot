@@ -88,6 +88,22 @@ class ernie_Config(Config):
         self.enable_citation = self._config.getboolean('ernie', 'enable_citation')
         self.enable_trace = self._config.getboolean('ernie', 'enable_trace')
 
+
+class spark_Config(Config):
+    def __init__(self):
+        super().__init__()
+        self.api_base = self._config.get('spark', 'url')
+        self.url = self.api_base
+        self.domain = self._config.get('spark', 'domain')
+        self.appid = self._config.get('spark', 'appid')
+        self.api_secret = self._config.get('spark', 'api_secret')
+        self.api_key = self._config.get('spark', 'api_key')
+        self.temperature = self._float(self._config.get('spark', 'temperature', fallback=0.9))
+        self.max_tokens = self._int(self._config.get('spark','max_tokens'))
+        self.top_k = self._int(self._config.get('spark', 'top_k'))
+
+
+
 if __name__ == '__main__':
     config = zhipu_Config()
     print(config.top_p)
