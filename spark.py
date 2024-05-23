@@ -72,7 +72,7 @@ class Spark(aichat):
         self.config = spark_Config()
         super().__init__()
     
-    def gen_params(self, uid, query):
+    def gen_params(self, uid, query, system):
         """
         通过appid和用户的提问来生成请参数
         """
@@ -96,12 +96,14 @@ class Spark(aichat):
                 }
             }
         }
+        if system:
+            data["payload"]["message"]['text'].insert(0, {"role": "system", "content": system})
         return data
 
     async def asend(self, msg, gid, uid):
         wsParam = Ws_Param(self.config.appid, self.config.api_key, self.config.api_secret, self.config.url)
         uri = wsParam.create_url()
-        data = json.dumps(self.gen_params(uid=uid,query=msg))
+        data = json.dumps(self.gen_params(uid=uid,query=msg,system=self.config.system))
         self.response = ""
         try:
             async with websockets.connect(uri) as ws:

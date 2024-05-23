@@ -101,9 +101,10 @@ class spark_Config(Config):
         self.temperature = self._float(self._config.get('spark', 'temperature', fallback=0.9))
         self.max_tokens = self._int(self._config.get('spark','max_tokens'))
         self.top_k = self._int(self._config.get('spark', 'top_k'))
+        self.system = self._config.get('spark','system')
 
 
 
 if __name__ == '__main__':
-    config = zhipu_Config()
-    print(config.top_p)
+    config = spark_Config()
+    print(bool(config.system))
