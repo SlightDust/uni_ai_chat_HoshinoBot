@@ -1,5 +1,6 @@
 import re
 import random
+from asyncio import sleep as asleep
 from hoshino import Service
 from hoshino.typing import CQEvent
 from .zhipu import Zhipu
@@ -45,6 +46,7 @@ async def ai_reply_prefix(bot, ev: CQEvent):
         result = await bot.send(ev, ernie.get_response())
         if ernie.need_clear_history:
             try:
+                await asleep(60)
                 await bot.delete_msg(self_id=ev.self_id, message_id=result['message_id'])
                 await bot.delete_msg(self_id=ev.self_id, message_id=ev.message_id)
             except Exception as e:
