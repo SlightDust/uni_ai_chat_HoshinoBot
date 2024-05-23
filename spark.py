@@ -72,14 +72,14 @@ class Spark(aichat):
         self.config = spark_Config()
         super().__init__()
     
-    def gen_params(self, query):
+    def gen_params(self, uid, query):
         """
         通过appid和用户的提问来生成请参数
         """
         data = {
             "header": {
                 "app_id": self.config.appid,
-                "uid": "1234",           
+                "uid": str(uid),           
                 # "patch_id": []    #接入微调模型，对应服务发布后的resourceid          
             },
             "parameter": {
@@ -101,14 +101,14 @@ class Spark(aichat):
     async def asend(self, msg, gid, uid):
         wsParam = Ws_Param(self.config.appid, self.config.api_key, self.config.api_secret, self.config.url)
         uri = wsParam.create_url()
-        data = json.dumps(self.gen_params(query=msg))
+        data = json.dumps(self.gen_params(uid=uid,query=msg))
         self.response = ""
         try:
             async with websockets.connect(uri) as ws:
                 await ws.send(data)
                 while True:
                     res = await ws.recv()
-                    print(f"Received: {res}")
+                    # print(f"Received: {res}")
                     res = json.loads(res)
                     res_code = res['header']['code']
                     if res_code == 0:
@@ -120,7 +120,7 @@ class Spark(aichat):
                             self.completion_tokens = res["payload"]["usage"]["text"]["completion_tokens"]
                             self.prompt_tokens = res["payload"]["usage"]["text"]["prompt_tokens"]
                             self.total_tokens = res["payload"]["usage"]["text"]["total_tokens"]
-                            self.token_cost_record(gid, uid, self.total_tokens, "spark")
+                            await self.token_cost_record(gid, uid, self.total_tokens, "spark")
                             break
                         else:
                             # 未结束，继续接收报文

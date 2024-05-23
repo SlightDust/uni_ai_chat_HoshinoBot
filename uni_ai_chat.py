@@ -6,13 +6,14 @@ from hoshino.typing import CQEvent
 from .zhipu import Zhipu
 from .azure_openai import Azure_openai
 from .ernie import Ernie
+from .spark import Spark
 
 sv = Service('uni_ai_chat', enable_on_default=False)
 
 black_word = ['今天我是什么少女', 'ba来一井']  # 如果有不想触发的词可以填在这里
 
 @sv.on_prefix('zhipu')
-async def ai_reply_prefix(bot, ev: CQEvent):
+async def zhipu_reply_prefix(bot, ev: CQEvent):
     text = str(ev.message.extract_plain_text()).strip()
     if text == '' or text in black_word:
         return
@@ -24,7 +25,7 @@ async def ai_reply_prefix(bot, ev: CQEvent):
         await bot.send(ev, err)
 
 @sv.on_prefix('gpt')
-async def ai_reply_prefix(bot, ev: CQEvent):
+async def azureopenai_reply_prefix(bot, ev: CQEvent):
     text = str(ev.message.extract_plain_text()).strip()
     if text == '' or text in black_word:
         return
@@ -36,7 +37,7 @@ async def ai_reply_prefix(bot, ev: CQEvent):
         await bot.send(ev, err)
 
 @sv.on_prefix('ernie')
-async def ai_reply_prefix(bot, ev: CQEvent):
+async def ernie_reply_prefix(bot, ev: CQEvent):
     text = str(ev.message.extract_plain_text()).strip()
     if text == '' or text in black_word:
         return
@@ -55,7 +56,7 @@ async def ai_reply_prefix(bot, ev: CQEvent):
         await bot.send(ev, err)
 
 @sv.on_prefix('webernie')
-async def ai_reply_prefix(bot, ev: CQEvent):
+async def ernie3_reply_prefix(bot, ev: CQEvent):
     text = str(ev.message.extract_plain_text()).strip()
     if text == '' or text in black_word:
         return
@@ -64,5 +65,17 @@ async def ai_reply_prefix(bot, ev: CQEvent):
     try:
         await ernie.asend(text, ev.group_id, ev.user_id)
         await bot.send(ev, ernie.get_response())
+    except Exception as err:
+        await bot.send(ev, err)
+
+@sv.on_prefix('spark')
+async def spark_reply_prefix(bot, ev: CQEvent):
+    text = str(ev.message.extract_plain_text()).strip()
+    if text == '' or text in black_word:
+        return
+    spark = Spark()
+    try:
+        await spark.asend(text, ev.group_id, ev.user_id)
+        await bot.send(ev, spark.get_response())
     except Exception as err:
         await bot.send(ev, err)

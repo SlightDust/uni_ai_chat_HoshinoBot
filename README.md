@@ -1,6 +1,7 @@
 # uni_ai_chat_HoshinoBot
 
-适用于HoshinoBot的统一AI对话插件，会尽可能多的整合常见的AI问答API。为避免类似openai0.x和1.x的兼容性问题，目标是不依赖SDK，全部通过 HTTP / Restful 接口实现。
+适用于HoshinoBot的统一AI对话插件，会尽可能多的整合常见的AI问答API。为避免类似openai0.x和1.x的兼容性问题，目标是不依赖SDK，全部通过 HTTP / Restful 接口实现。  
+Spark不得不用websockets……
 
 
 
@@ -9,10 +10,10 @@
 - [Azure OpenAI（国际版Azure）](https://portal.azure.com/)   
 - [智谱清言（智谱AI）](https://www.zhipuai.cn)
 - [ernie-bot（文心一言，百度千帆大模型）](https://console.bce.baidu.com/qianfan/)（免费版和付费版）
+- [Spark（讯飞星火）](https://xinghuo.xfyun.cn/sparkapi)  
 
 ### 适配中
 - [便携AI转发的OpenAI](https://api.bianxieai.com/)
-- [SparkDesk（讯飞星火）](https://xinghuo.xfyun.cn/sparkapi)  
 - and so on...
 
 ## 免费资源
