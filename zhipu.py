@@ -35,6 +35,7 @@ class Zhipu(aichat):
             'max_tokens': self.config.max_tokens,
             'temperature': self.config.temperature,
             'top_p': self.config.top_p,
+            'user_id': str(uid),
         }
         if self.config.system:
             self.data['messages'].insert(0, {'role':'system','content': f'{self.config.system}'})
