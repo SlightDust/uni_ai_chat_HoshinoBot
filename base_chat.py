@@ -47,7 +47,7 @@ class aichat:
 
     def get_response(self):
         '''获取AI响应'''
-        return self.response
+        return self.response.strip()
     
     def get_usage(self):
         '''获取本次调用消耗的总tokens'''
