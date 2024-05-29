@@ -64,7 +64,14 @@ async def ernie3_reply_prefix(bot, ev: CQEvent):
     ernie.free_mode = False
     try:
         await ernie.asend(text, ev.group_id, ev.user_id)
-        await bot.send(ev, ernie.get_response())
+        result = await bot.send(ev, ernie.get_response())
+        if ernie.need_clear_history:
+            try:
+                await asleep(60)
+                await bot.delete_msg(self_id=ev.self_id, message_id=result['message_id'])
+                await bot.delete_msg(self_id=ev.self_id, message_id=ev.message_id)
+            except Exception as e:
+                await bot.send(ev, f'撤回消息失败，请反馈,{e}')
     except Exception as err:
         await bot.send(ev, err)
 
