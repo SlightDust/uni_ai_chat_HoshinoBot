@@ -11,9 +11,10 @@ Spark不得不用websocket……
 - [智谱清言（智谱AI）](https://www.zhipuai.cn)
 - [ernie-bot（文心一言，百度千帆大模型）](https://console.bce.baidu.com/qianfan/)（免费版和付费版）
 - [Spark（讯飞星火）](https://xinghuo.xfyun.cn/sparkapi)  
+- [Qwen（通义千问）](https://bailian.console.aliyun.com/) （预留了调qwen-long和qwen-turbo两个命令）
 
 ### 适配中
-- [便携AI转发的OpenAI](https://api.bianxieai.com/)
+- [便携AI转发的OpenAI](https://api.bianxieai.com/)  ←摸了
 - and so on...
 
 ## 局限

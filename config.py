@@ -103,6 +103,19 @@ class spark_Config(Config):
         self.top_k = self._int(self._config.get('spark', 'top_k'))
         self.system = self._config.get('spark','system')
 
+class qwen_Config(Config):
+    def __init__(self):
+        super().__init__()
+        self.api_key = self._config.get('qwen', 'api_key')
+        self.model = self._config.get('qwen','model')
+        self.model_search = self._config.get('qwen','model_search')
+        self.max_tokens = self._int(self._config.get('qwen','max_tokens'))
+        self.url = self._config.get('qwen', 'url')
+        self.top_p = self._float(self._config.get('qwen', 'top_p'))
+        self.temperature = self._float(self._config.get('qwen', 'temperature'))
+        self.system = self._config.get('qwen','system')
+
+
 
 
 if __name__ == '__main__':

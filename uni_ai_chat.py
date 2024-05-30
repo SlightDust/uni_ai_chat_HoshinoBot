@@ -87,3 +87,28 @@ async def spark_reply_prefix(bot, ev: CQEvent):
         await bot.send(ev, spark.get_response())
     except Exception as err:
         await bot.send(ev, err)
+
+@sv.on_prefix('qwenl')
+async def qwen_long_reply_prefix(bot, ev: CQEvent):
+    text = str(ev.message.extract_plain_text()).strip()
+    if text == '' or text in black_word:
+        return
+    qwen = Qwen()
+    try:
+        await qwen.asend(text, ev.group_id, ev.user_id)
+        await bot.send(ev, qwen.get_response())
+    except Exception as err:
+        await bot.send(ev, err)
+
+@sv.on_prefix('qwent')
+async def qwen_turbo_reply_prefix(bot, ev: CQEvent):
+    text = str(ev.message.extract_plain_text()).strip()
+    if text == '' or text in black_word:
+        return
+    qwen = Qwen()
+    qwen.enable_search = True
+    try:
+        await qwen.asend(text, ev.group_id, ev.user_id)
+        await bot.send(ev, qwen.get_response())
+    except Exception as err:
+        await bot.send(ev, err)
