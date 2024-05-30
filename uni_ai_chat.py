@@ -7,12 +7,13 @@ from .zhipu import Zhipu
 from .azure_openai import Azure_openai
 from .ernie import Ernie
 from .spark import Spark
+from .qwen import Qwen
 
 sv = Service('uni_ai_chat', enable_on_default=False)
 
 black_word = ['今天我是什么少女', 'ba来一井']  # 如果有不想触发的词可以填在这里
 
-@sv.on_prefix('zhipu')
+@sv.on_prefix(('zhipu','glm'))
 async def zhipu_reply_prefix(bot, ev: CQEvent):
     text = str(ev.message.extract_plain_text()).strip()
     if text == '' or text in black_word:
