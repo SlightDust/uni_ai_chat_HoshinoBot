@@ -88,7 +88,7 @@ class Ernie(aichat):
                     search_response += f"{search_result['index']}. {search_result['title']} ({search_result['url']})\n"
                 self.response += f"\n\n{search_response}"
 
-            await self.token_cost_record(gid, uid, self.total_tokens, 'ernie')
+            await self.token_cost_record(gid, uid, self.total_tokens, self.config.free_model if self.free_mode else f'ernie-{self.config.model}')
             return resp_j
 
 
@@ -122,7 +122,7 @@ if __name__ == '__main__':
     async def task1():
         print("Task 1 is running")
         ernie = Ernie()
-        ernie.free_mode = False
+        ernie.free_mode = True
         if (await ernie.asend('“鲁道夫象征写出了能笑死人的冷笑话”是什么梗', 112233445566, 1)):
             print(ernie.response)
             print('\n')
