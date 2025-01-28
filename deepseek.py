@@ -1,6 +1,7 @@
 import asyncio
 import requests.exceptions
 import json
+import httpx
 
 try:
     from .config import deepseek_Config
@@ -21,6 +22,7 @@ class Deepseek(aichat):
     def __init__(self, reasoner=False):
         self.config = deepseek_Config()
         self.reasoner = reasoner
+        self.reasoning = None
         self.headers = {
             'Authorization': f'Bearer {self.config.api_key}',
             'Content-Type': 'application/json',
@@ -51,15 +53,22 @@ class Deepseek(aichat):
         if self.config.system:
             self.data['messages'].insert(0, {'content': self.config.system,'role':'system'})
         try:
-            resp = await aiorequests.post(url, headers=self.headers, data=json.dumps(self.data), timeout = 60)
-        # timeout
+            # resp = await aiorequests.post(url, headers=self.headers, data=json.dumps(self.data), timeout = 360)
+            async with httpx.AsyncClient() as client:
+                resp = await client.post(url, headers=self.headers, json=self.data, timeout = 600)
         except (asyncio.TimeoutError, requests.exceptions.ConnectionError):
             self.response = "请求超时，请稍后再试"
             return None
+        except httpx.RemoteProtocolError:
+            self.response = "对端关闭连接而未发送完整的消息体（不完整的分块读取），请稍后再试"
+            return None
         print("=============begin 原始响应============")
-        print(await resp.text)
+        print(resp.text)
         print("=============end 原始响应============")
-        resp_j = await resp.json()
+        if resp.text.strip() == '':
+            self.response = "服务器返回了空白响应，请稍后再试。"
+            return None
+        resp_j = resp.json()
         resp_code = resp.status_code
         error_code = resp_code
         if error_code != 200:
@@ -70,6 +79,7 @@ class Deepseek(aichat):
             # 给回复
             self.response = resp_j['choices'][0]['message']['content']
             self.usage = resp_j['usage']
+            self.reasoning = resp_j['choices'][0]['message']['reasoning_content'] if self.reasoner else None
             await self.token_cost_record_new(gid, uid, self.usage, 'deepseek' if not self.reasoner else 'deepseek_reasoner')
             # 处理可能的finish_reason
             finish_reason = resp_j['choices'][0]['finish_reason']
@@ -82,6 +92,8 @@ class Deepseek(aichat):
             elif finish_reason == 'insufficient_system_resource':
                 self.response += "\n\n...系统推理资源不足，生成被打断。"
             return resp_j
+    def get_reasoning(self):
+        return self.reasoning
         
 if __name__ == '__main__':
     async def task1():
