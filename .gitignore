@@ -162,3 +162,4 @@ cython_debug/
 
 config.ini
 token_cost.json
+test.py

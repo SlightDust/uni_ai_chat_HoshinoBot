@@ -115,6 +115,21 @@ class qwen_Config(Config):
         self.temperature = self._float(self._config.get('qwen', 'temperature'))
         self.system = self._config.get('qwen','system')
 
+class deepseek_Config(Config):
+    def __init__(self):
+        super().__init__()
+        self.api_key = self._config.get('deepseek', 'api_key')
+        self.model = self._config.get('deepseek','model')
+        self.model_reasoner = self._config.get('deepseek','model_reasoner')
+        self.url = self._config.get('deepseek', 'url')
+        self.temperature = self._float(self._config.get('deepseek', 'temperature'))
+        self.top_p = self._float(self._config.get('deepseek', 'top_p'))
+        self.frequency_penalty = self._float(self._config.get('deepseek', 'frequency_penalty'))
+        self.presence_penalty = self._float(self._config.get('deepseek', 'presence_penalty'))
+        self.stream = self._config.getboolean('deepseek','stream')
+        self.system = self._config.get('deepseek','system')
+        self.max_tokens = self._int(self._config.get('deepseek','max_tokens'))
+        
 
 
 

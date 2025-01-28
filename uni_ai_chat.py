@@ -8,6 +8,7 @@ from .azure_openai import Azure_openai
 from .ernie import Ernie
 from .spark import Spark
 from .qwen import Qwen
+from.deepseek import Deepseek
 
 sv = Service('uni_ai_chat', enable_on_default=False)
 
@@ -110,5 +111,32 @@ async def qwen_turbo_reply_prefix(bot, ev: CQEvent):
     try:
         await qwen.asend(text, ev.group_id, ev.user_id)
         await bot.send(ev, qwen.get_response())
+    except Exception as err:
+        await bot.send(ev, err)
+
+@sv.on_prefix(('ds', 'deepseek'))
+async def deepseek_reply_prefix(bot, ev: CQEvent):
+    text = str(ev.message.extract_plain_text()).strip()
+    if text == '' or text in black_word:
+        return
+    deepseek = Deepseek()
+    try:
+        await deepseek.asend(text, ev.group_id, ev.user_id)
+        reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
+        await bot.send(ev, reply_message)
+    except Exception as err:
+        await bot.send(ev, err)
+
+
+@sv.on_prefix(('dsr', 'deepseekr'))
+async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
+    text = str(ev.message.extract_plain_text()).strip()
+    if text == '' or text in black_word:
+        return
+    deepseek = Deepseek(reasoner=True)
+    try:
+        await deepseek.asend(text, ev.group_id, ev.user_id)
+        reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
+        await bot.send(ev, reply_message)
     except Exception as err:
         await bot.send(ev, err)

@@ -63,7 +63,7 @@ if __name__ == '__main__':
     async def task1():
         print("Task 1 is running")
         zhipu = Zhipu()
-        await zhipu.asend('介绍一下东海帝王', 112233445566, 1)
+        await zhipu.asend('非对称加密在生活中有哪些常见应用', 112233445566, 123456)
         print(zhipu.get_response())
         print(zhipu.get_usage())
         print("Task 1 completed")

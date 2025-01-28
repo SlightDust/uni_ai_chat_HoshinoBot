@@ -45,6 +45,21 @@ class aichat:
         with open(token_cost_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
+    async def token_cost_record_new(self, gid, uid, usage, api):
+        '''直接传入usage数组，记录token消耗
+        Args:
+            usage (dict): api返回的usage数组
+            api (str): 调用的api名称
+        '''
+        gid = str(gid)
+        uid = str(uid)
+        try:
+            cost = int(usage['total_tokens'])
+        except:
+            cost = int(usage['completion_tokens']) + int(usage['prompt_tokens'])
+        self.total_tokens = cost
+        await self.token_cost_record(gid, uid, cost, api)
+
     def get_response(self):
         '''获取AI响应'''
         return self.response.strip()
