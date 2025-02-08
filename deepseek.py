@@ -72,7 +72,16 @@ class Deepseek(aichat):
         resp_code = resp.status_code
         error_code = resp_code
         if error_code != 200:
-            error_msg = resp_j['error_msg']
+            try:
+                error_msg = resp_j['error_msg']
+            except:
+                # OpenAI兼容接口的返回
+                try:
+                    error_code = error_msg = resp_j['error']['code']
+                    error_msg = resp_j['error']['message']
+                except:
+                    # 啥都不是
+                    error_msg = f"无法解析，原始返回信息{resp.text}"
             self.response = f"发生错误:\ncode: {error_code}\n{error_msg}"
             return resp_j
         else:
