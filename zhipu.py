@@ -39,8 +39,8 @@ class Zhipu(aichat):
         }
         if self.config.system:
             self.data['messages'].insert(0, {'role':'system','content': f'{self.config.system}'})
-        if not self.config.use_web_search:
-            self.data['tools']= [{'type':'web_search','web_search':{'enable': False}}]
+        if self.config.use_web_search:
+            self.data['tools']= [{'type':'web_search','web_search':{'enable': True}}]
         resp = await aiorequests.post(f'{url}', headers=self.headers, json=self.data)
         resp_j = await resp.json()
         print(resp_j)
