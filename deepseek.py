@@ -18,6 +18,7 @@ except ImportError:
 
 class Deepseek(aichat):
     config: deepseek_Config
+    is_good_response: bool = False
 
     def __init__(self, reasoner=False):
         self.config = deepseek_Config()
@@ -68,6 +69,8 @@ class Deepseek(aichat):
         if resp.text.strip() == '':
             self.response = "服务器返回了空白响应，请稍后再试。"
             return None
+        
+        self.is_good_response = True
         resp_j = resp.json()
         resp_code = resp.status_code
         error_code = resp_code
@@ -101,6 +104,7 @@ class Deepseek(aichat):
             elif finish_reason == 'insufficient_system_resource':
                 self.response += "\n\n...系统推理资源不足，生成被打断。"
             return resp_j
+    
     def get_reasoning(self):
         return self.reasoning
         
