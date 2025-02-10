@@ -149,36 +149,41 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
     try:
         await deepseek.asend(text, ev.group_id, ev.user_id)
         reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
-        await bot.send(ev, reply_message)
-        if "请稍后再试" in deepseek.get_response():
-            await asleep(1)
-            chain = [
-                {"type": "node",
-                "data": {"name": str(NICKNAME[0]),
-                        "uin": str(ev.self_id),
-                        "content": [
-                            {"type": "text", "data": {"text": "下面是推理过程"}},
-                            ]
-                        }
-                },
-                {"type": "node",
-                "data": {"name": str(NICKNAME[0]),
-                        "uin": str(ev.self_id),
-                        "content": [
-                            {"type": "text", "data": {"text": deepseek.get_reasoning()}},
-                            ]
-                        }
-                },
-                {"type": "node",
-                "data": {"name": str(NICKNAME[0]),
-                        "uin": str(ev.self_id),
-                        "content": [
-                            {"type": "text", "data": {"text": f"推理消耗tokens：{deepseek.get_usage()}"}}
-                            ]
-                        }
-                }
-            ]
-            await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
+        mid = await bot.send(ev, reply_message)
+        mid = mid['message_id']
+        await asleep(1)
+        chain = [
+            {"type": "node",
+            "data": {"name": str(NICKNAME[0]),
+                    "uin": str(ev.self_id),
+                    "content": [
+                        {"type": "text", "data": {"text": "下面是推理过程"}},
+                        ]
+                    }
+            },
+            {"type": "node",
+            "data": {"name": str(NICKNAME[0]),
+                    "uin": str(ev.self_id),
+                    "content": [
+                        {"type": "text", "data": {"text": deepseek.get_reasoning()}},
+                        ]
+                    }
+            },
+            {"type": "node",
+            "data": {"name": str(NICKNAME[0]),
+                    "uin": str(ev.self_id),
+                    "content": [
+                        {"type": "text", "data": {"text": f"推理消耗tokens：{deepseek.get_usage()}"}}
+                        ]
+                    }
+            }
+        ]
+        if "请稍后再试" not in reply_message:
+            try:
+                await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
+            except:
+                await bot.send(ev, f"发送推理过程失败")
+        await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'dsr', deepseek.payload_messages, deepseek.get_response())
     except Exception as err:
         await bot.send(ev, str(err))
 
