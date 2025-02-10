@@ -33,24 +33,16 @@ class Zhipu(aichat):
                 ]
             if self.config.system:
                 self.payload_messages.insert(0, {'role':'system','content': f'{self.config.system}'})
-            self.data = {
-                'model': self.config.model,
-                'messages': self.payload_messages, 
-                'max_tokens': self.config.max_tokens,
-                'temperature': self.config.temperature,
-                'top_p': self.config.top_p,
-                'user_id': str(uid),
-            }
         else: # 多轮对话
             self.payload_messages = messages
-            self.data = {
-                'model': self.config.model,
-                'messages': self.payload_messages, 
-                'max_tokens': self.config.max_tokens,
-                'temperature': self.config.temperature,
-                'top_p': self.config.top_p,
-                'user_id': str(uid),
-            }
+        self.data = {
+            'model': self.config.model,
+            'messages': self.payload_messages, 
+            'max_tokens': self.config.max_tokens,
+            'temperature': self.config.temperature,
+            'top_p': self.config.top_p,
+            'user_id': str(uid),
+        }
 
         if self.config.use_web_search:
             self.data['tools'] = [{'type':'web_search','web_search':{'enable': True, "search_result": True}}]
