@@ -207,5 +207,17 @@ async def ai_chat_continue(bot, ev):
                     await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'ds', deepseek.payload_messages, deepseek.get_response())
                 except Exception as err:
                     await bot.send(ev, err)
+            elif his_record['service'] == 'zhipu':
+                messages = his_record['messages']
+                messages.append({"role":"user", "content":msg})
+                zhipu = Zhipu()
+                try:
+                    await zhipu.asend(msg, ev.group_id, ev.user_id, True, messages)
+                    reply_message = f"[CQ:reply,id={ev.message_id}]{zhipu.get_response()}"
+                    mid = await bot.send(ev, reply_message)
+                    mid = mid['message_id']
+                    await zhipu.chat_history_record(ev.group_id, ev.user_id, mid, 'zhipu', zhipu.payload_messages, zhipu.get_response())
+                except Exception as err:
+                    await bot.send(ev, err)
             else:
                 await bot.send(ev, f"{his_record['service']}服务暂不支持多轮对话")

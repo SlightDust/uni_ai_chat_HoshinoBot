@@ -45,7 +45,7 @@ class Zhipu(aichat):
             self.payload_messages = messages
             self.data = {
                 'model': self.config.model,
-                'messages': payload_messages, 
+                'messages': self.payload_messages, 
                 'max_tokens': self.config.max_tokens,
                 'temperature': self.config.temperature,
                 'top_p': self.config.top_p,
