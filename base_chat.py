@@ -93,6 +93,24 @@ class aichat:
         whold_data.append(new_data)
         with open(chat_history_path, 'w', encoding='utf-8') as f:
             json.dump(whold_data, f, ensure_ascii=False, indent=4)
+    
+    async def chat_history_limiter(self, limit=10):
+        '''预处理，限制携带的历史对话轮数
+        Args:
+            limit (int): 限制轮数
+        Returns:
+            list: 携带的历史对话。同时也会直接修改self.payload_messages
+        '''
+        messages = []
+        if len(messages) <= limit:
+            return self.payload_messages
+        
+        if self.payload_messages[0]['role'] == 'system':
+            messages[0] = self.payload_messages[0]  # 这个是systemn
+        else:
+            messages = self.payload_messages[-limit*2-1:]  # 携带最近limit轮和最后一次用户输入
+            self.payload_messages = messages
+            return messages
 
     def get_response(self):
         '''获取AI响应'''
