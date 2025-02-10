@@ -152,6 +152,17 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
         mid = await bot.send(ev, reply_message)
         mid = mid['message_id']
         await asleep(1)
+        chain = deepseek_reasoning_chain(ev, deepseek)
+        if "请稍后再试" not in reply_message:
+            try:
+                await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
+            except:
+                await bot.send(ev, f"发送推理过程失败")
+        await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'dsr', deepseek.payload_messages, deepseek.get_response())
+    except Exception as err:
+        await bot.send(ev, str(err))
+
+def deepseek_reasoning_chain(ev, deepseek:Deepseek):
         chain = [
             {"type": "node",
             "data": {"name": str(NICKNAME[0]),
@@ -178,14 +189,7 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
                     }
             }
         ]
-        if "请稍后再试" not in reply_message:
-            try:
-                await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
-            except:
-                await bot.send(ev, f"发送推理过程失败")
-        await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'dsr', deepseek.payload_messages, deepseek.get_response())
-    except Exception as err:
-        await bot.send(ev, str(err))
+        return chain
 
 @sv.on_message()
 async def ai_chat_continue(bot, ev):
@@ -222,6 +226,26 @@ async def ai_chat_continue(bot, ev):
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     await zhipu.chat_history_record(ev.group_id, ev.user_id, mid, 'zhipu', zhipu.payload_messages, zhipu.get_response())
+                except Exception as err:
+                    await bot.send(ev, str(err))
+            elif his_record['service'] == 'dsr':
+                messages = his_record['messages']
+                messages.append({"role":"user", "content":msg})
+                await bot.send(ev, '正在推理，请耐心等待...')
+                deepseek = Deepseek(reasoner=True)
+                try:
+                    await deepseek.asend(msg, ev.group_id, ev.user_id, True, messages)
+                    reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
+                    mid = await bot.send(ev, reply_message)
+                    mid = mid['message_id']
+                    await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'dsr', deepseek.payload_messages, deepseek.get_response())
+
+                    chain = deepseek_reasoning_chain(ev, deepseek)
+                    if "请稍后再试" not in reply_message:
+                        try:
+                            await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
+                        except:
+                            await bot.send(ev, f"发送推理过程失败")
                 except Exception as err:
                     await bot.send(ev, str(err))
             else:
