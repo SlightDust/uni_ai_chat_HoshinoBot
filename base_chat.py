@@ -21,6 +21,7 @@ class aichat:
     completion_tokens: int   # 补全tokens
     prompt_tokens: int       # 提示词tokens
     total_tokens: int = 0    # 总tokens
+    payload_messages: list  # 对话列表
     def __init__(self):
         pass
 

@@ -22,25 +22,38 @@ class Zhipu(aichat):
             'Authorization': f'Bearer {self.config.api_key}',
             'Content-Type': 'application/json'
         }
-    async def asend(self, msg, gid, uid):
+    async def asend(self, msg, gid, uid, continue_flag:bool=False, messages:list=None):
         url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
-        self.data = {
-            'model': self.config.model,
-            'messages': [
-                {
-                    'role': 'user',
-                    'content': msg
-                },
-            ],
-            'max_tokens': self.config.max_tokens,
-            'temperature': self.config.temperature,
-            'top_p': self.config.top_p,
-            'user_id': str(uid),
-        }
-        if self.config.system:
-            self.data['messages'].insert(0, {'role':'system','content': f'{self.config.system}'})
+        if not continue_flag:
+            self.payload_messages = [
+                    {
+                        'role': 'user',
+                        'content': msg
+                    },
+                ]
+            if self.config.system:
+                self.payload_messages.insert(0, {'role':'system','content': f'{self.config.system}'})
+            self.data = {
+                'model': self.config.model,
+                'messages': self.payload_messages, 
+                'max_tokens': self.config.max_tokens,
+                'temperature': self.config.temperature,
+                'top_p': self.config.top_p,
+                'user_id': str(uid),
+            }
+        else: # 多轮对话
+            self.payload_messages = messages
+            self.data = {
+                'model': self.config.model,
+                'messages': payload_messages, 
+                'max_tokens': self.config.max_tokens,
+                'temperature': self.config.temperature,
+                'top_p': self.config.top_p,
+                'user_id': str(uid),
+            }
+
         if self.config.use_web_search:
-            self.data['tools']= [{'type':'web_search','web_search':{'enable': True}}]
+            self.data['tools'] = [{'type':'web_search','web_search':{'enable': True, "search_result": True}}]
         resp = await aiorequests.post(f'{url}', headers=self.headers, json=self.data)
         resp_j = await resp.json()
         print(resp_j)

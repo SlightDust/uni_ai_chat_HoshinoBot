@@ -28,7 +28,10 @@ async def zhipu_reply_prefix(bot, ev: CQEvent):
     zhipu = Zhipu()
     try:
         await zhipu.asend(text, ev.group_id, ev.user_id)
-        await bot.send(ev, zhipu.get_response())
+        reply_message = f"[CQ:reply,id={ev.message_id}]{zhipu.get_response()}"
+        mid = await bot.send(ev, reply_message) 
+        mid = mid['message_id']
+        await zhipu.chat_history_record(ev.group_id, ev.user_id, mid, 'zhipu', zhipu.payload_messages, zhipu.get_response())
     except Exception as err:
         await bot.send(ev, err)
 
