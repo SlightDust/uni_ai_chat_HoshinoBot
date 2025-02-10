@@ -7,20 +7,21 @@ Spark不得不用websocket……
 
 ## AI平台适配情况
 ### 已适配：
-- [Azure OpenAI（国际版Azure）](https://portal.azure.com/)   
+- ~~[Azure OpenAI（国际版Azure）](https://portal.azure.com/)~~  Azure把中国个人用户的权限都掐了，用不了了。
 - [智谱清言（智谱AI）](https://www.zhipuai.cn)
 - [ernie-bot（文心一言，百度千帆大模型）](https://console.bce.baidu.com/qianfan/)（免费版和付费版）
 - [Spark（讯飞星火）](https://xinghuo.xfyun.cn/sparkapi)  
 - [Qwen（通义千问）](https://bailian.console.aliyun.com/) （预留了调qwen-long和qwen-turbo两个命令）
-- [deepseek](https://www.deepseek.com/)
+- [deepseek](https://www.deepseek.com/)（ds和dsr两个命令）  
 
 ### 适配中
 - [便携AI转发的OpenAI](https://api.bianxieai.com/)  ←摸了
+- 智谱的图像识别模型GLM-4V-Flash。
 - and so on...
 
 ## 局限
 - 代码很粗糙
-- 目前，只做了单次对话，还没搞多轮对话
+- 智谱和deepseek做了多轮对话，其他几个用的不多，摸了
 
 ## 免费资源
 目前（2024.05.22），以下大模型API可以免费使用：
