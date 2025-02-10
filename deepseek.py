@@ -30,29 +30,47 @@ class Deepseek(aichat):
             'Accept': 'application/json',
         }
 
-    async def asend(self, msg, gid, uid):
+    async def asend(self, msg, gid, uid, continue_flag:bool=False, messages:list=None):
         url = self.config.url
-        self.data = {
-            'model': self.config.model if not self.reasoner else self.config.model_reasoner,
-            'stream': self.config.stream,
-            'frequency_penalty': self.config.frequency_penalty,
-            'max_tokens': self.config.max_tokens,
-            'presence_penalty': self.config.presence_penalty,
-            'temperature': self.config.temperature,
-            'top_p': self.config.top_p,
-            'response_format': {
-                'type': 'text'
-            },
-            'stop': None,
-            'messages':[
-                {
-                    'content': msg,
-                    'role': 'user'
-                }
-            ]
-        }
-        if self.config.system:
-            self.data['messages'].insert(0, {'content': self.config.system,'role':'system'})
+        if not continue_flag:
+            self.payload_messages = [
+                    {
+                        'content': msg,
+                        'role': 'user'
+                    }
+                ]
+            if self.config.system:
+                self.payload_messages.insert(0, {'content': self.config.system,'role':'system'})
+            self.data = {
+                'model': self.config.model if not self.reasoner else self.config.model_reasoner,
+                'stream': self.config.stream,
+                'frequency_penalty': self.config.frequency_penalty,
+                'max_tokens': self.config.max_tokens,
+                'presence_penalty': self.config.presence_penalty,
+                'temperature': self.config.temperature,
+                'top_p': self.config.top_p,
+                'response_format': {
+                    'type': 'text'
+                },
+                'stop': None,
+                'messages': self.payload_messages
+            }
+        else: # 多轮对话
+            self.payload_messages = messages
+            self.data = {
+                'model': self.config.model if not self.reasoner else self.config.model_reasoner,
+                'stream': self.config.stream,
+                'frequency_penalty': self.config.frequency_penalty,
+                'max_tokens': self.config.max_tokens,
+                'presence_penalty': self.config.presence_penalty,
+                'temperature': self.config.temperature,
+                'top_p': self.config.top_p,
+                'response_format': {
+                    'type': 'text'
+                },
+                'stop': None,
+                'messages': messages
+            }
         try:
             # resp = await aiorequests.post(url, headers=self.headers, data=json.dumps(self.data), timeout = 360)
             async with httpx.AsyncClient() as client:

@@ -3,9 +3,15 @@ import os
 
 current_path = os.path.dirname(__file__)
 token_cost_path = os.path.join(current_path, 'token_cost.json')
+chat_history_path = os.path.join(current_path, 'chat_history.json')
+
 if not os.path.exists(token_cost_path):
     with open(token_cost_path, 'w', encoding='utf-8') as f:
         f.write('{}')
+
+if not os.path.exists(chat_history_path):
+    with open(chat_history_path, 'w', encoding='utf-8') as f:
+        f.write('[]')
 
 class aichat:
     headers: dict  # 请求头
@@ -59,6 +65,33 @@ class aichat:
             cost = int(usage['completion_tokens']) + int(usage['prompt_tokens'])
         self.total_tokens = cost
         await self.token_cost_record(gid, uid, cost, api)
+
+    async def chat_history_record(self, gid, uid, mid, service, messages, assistant_reply):
+        '''记录ai对话历史
+        Args:
+            gid (int): 群号
+            uid (int): QQ号
+            mid (int): 消息id
+            service (str): 服务名称
+            messages (list): 消息列表
+            assistant_reply (str): ai回复
+        '''
+        gid = str(gid)
+        uid = str(uid)
+        mid = str(mid)
+        messages.append({'role':'assistant','content':assistant_reply})
+        with open(chat_history_path, 'r', encoding='utf-8') as f:
+            whold_data = json.load(f)
+        new_data = {
+            'gid': gid,
+            'uid': uid,
+            'mid': mid,
+            'service': service,
+            'messages': messages
+        }
+        whold_data.append(new_data)
+        with open(chat_history_path, 'w', encoding='utf-8') as f:
+            json.dump(whold_data, f, ensure_ascii=False, indent=4)
 
     def get_response(self):
         '''获取AI响应'''

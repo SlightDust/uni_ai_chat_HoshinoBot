@@ -11,6 +11,8 @@ from .spark import Spark
 from .qwen import Qwen
 from.deepseek import Deepseek
 
+from .history_util import *
+
 if type(NICKNAME)!=tuple:
     NICKNAME=[NICKNAME]
 
@@ -127,7 +129,9 @@ async def deepseek_reply_prefix(bot, ev: CQEvent):
     try:
         await deepseek.asend(text, ev.group_id, ev.user_id)
         reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
-        await bot.send(ev, reply_message)
+        mid = await bot.send(ev, reply_message) 
+        mid = mid['message_id']
+        await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'ds', deepseek.payload_messages, deepseek.get_response())
     except Exception as err:
         await bot.send(ev, err)
 
@@ -160,3 +164,31 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
             await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
     except Exception as err:
         await bot.send(ev, err)
+
+@sv.on_message()
+async def ai_chat_continue(bot, ev):
+    p1 = re.compile(r'\[CQ:reply,id=(.*?)\]', re.S)  # 匹配规则
+    reply_msg_id = re.findall(p1, ev.raw_message)  # 消息id
+    if not reply_msg_id:
+        return
+    reply_msg_id = reply_msg_id[0]
+    msg = str(ev.message.extract_plain_text()).strip()
+    # sv.logger.info(f"收到对{reply_msg_id}的回复，进行多轮AI对话")
+    history = load_history()
+    for his_record in history:
+        if his_record['mid'] == str(reply_msg_id):
+            sv.logger.info(f"收到对{reply_msg_id}的回复，调用{his_record['service']}进行多轮AI对话")
+            if his_record['service'] == 'ds':
+                messages = his_record['messages']
+                messages.append({"role":"user", "content":msg})
+                deepseek = Deepseek()
+                try:
+                    await deepseek.asend("", ev.group_id, ev.user_id, True, messages)
+                    reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
+                    mid = await bot.send(ev, reply_message)
+                    mid = mid['message_id']
+                    await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'ds', deepseek.payload_messages, deepseek.get_response())
+                except Exception as err:
+                    await bot.send(ev, err)
+            else:
+                await bot.send(ev, f"{his_record['service']}服务暂不支持多轮对话")
