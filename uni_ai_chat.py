@@ -150,20 +150,34 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
         await deepseek.asend(text, ev.group_id, ev.user_id)
         reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
         await bot.send(ev, reply_message)
-        await asleep(1)
-        chain = [
-            {"type": "node",
-             "data": {"name": str(NICKNAME[0]),
-                      "uin": str(ev.self_id),
-                      "content": [
-                          {"type": "text", "data": {"text": "下面是推理过程"}},
-                          {"type": "text", "data": {"text": deepseek.get_reasoning()}},
-                          {"type": "text", "data": {"text": f"推理消耗：{deepseek.get_usage()}"}}
-                        ]
-                    }
-            }
-        ]
-        if "请稍后再试" not in reply_message:
+        if "请稍后再试" in deepseek.get_response():
+            await asleep(1)
+            chain = [
+                {"type": "node",
+                "data": {"name": str(NICKNAME[0]),
+                        "uin": str(ev.self_id),
+                        "content": [
+                            {"type": "text", "data": {"text": "下面是推理过程"}},
+                            ]
+                        }
+                },
+                {"type": "node",
+                "data": {"name": str(NICKNAME[0]),
+                        "uin": str(ev.self_id),
+                        "content": [
+                            {"type": "text", "data": {"text": deepseek.get_reasoning()}},
+                            ]
+                        }
+                },
+                {"type": "node",
+                "data": {"name": str(NICKNAME[0]),
+                        "uin": str(ev.self_id),
+                        "content": [
+                            {"type": "text", "data": {"text": f"推理消耗tokens：{deepseek.get_usage()}"}}
+                            ]
+                        }
+                }
+            ]
             await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
     except Exception as err:
         await bot.send(ev, err)
