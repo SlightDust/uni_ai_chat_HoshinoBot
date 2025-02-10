@@ -33,7 +33,7 @@ async def zhipu_reply_prefix(bot, ev: CQEvent):
         mid = mid['message_id']
         await zhipu.chat_history_record(ev.group_id, ev.user_id, mid, 'zhipu', zhipu.payload_messages, zhipu.get_response())
     except Exception as err:
-        await bot.send(ev, err)
+        await bot.send(ev, str(err))
 
 @sv.on_prefix('gpt')
 async def azureopenai_reply_prefix(bot, ev: CQEvent):
@@ -45,7 +45,7 @@ async def azureopenai_reply_prefix(bot, ev: CQEvent):
         await azure_openai.asend(text, ev.group_id, ev.user_id)
         await bot.send(ev, azure_openai.get_response())
     except Exception as err:
-        await bot.send(ev, err)
+        await bot.send(ev, str(err))
 
 @sv.on_prefix('ernie')
 async def ernie_reply_prefix(bot, ev: CQEvent):
@@ -64,7 +64,7 @@ async def ernie_reply_prefix(bot, ev: CQEvent):
             except Exception as e:
                 await bot.send(ev, f'撤回消息失败，请反馈,{e}')
     except Exception as err:
-        await bot.send(ev, err)
+        await bot.send(ev, str(err))
 
 @sv.on_prefix('webernie')
 async def ernie3_reply_prefix(bot, ev: CQEvent):
@@ -84,7 +84,7 @@ async def ernie3_reply_prefix(bot, ev: CQEvent):
             except Exception as e:
                 await bot.send(ev, f'撤回消息失败，请反馈,{e}')
     except Exception as err:
-        await bot.send(ev, err)
+        await bot.send(ev, str(err))
 
 @sv.on_prefix('spark')
 async def spark_reply_prefix(bot, ev: CQEvent):
@@ -96,7 +96,7 @@ async def spark_reply_prefix(bot, ev: CQEvent):
         await spark.asend(text, ev.group_id, ev.user_id)
         await bot.send(ev, spark.get_response())
     except Exception as err:
-        await bot.send(ev, err)
+        await bot.send(ev, str(err))
 
 @sv.on_prefix('qwenl')
 async def qwen_long_reply_prefix(bot, ev: CQEvent):
@@ -108,7 +108,7 @@ async def qwen_long_reply_prefix(bot, ev: CQEvent):
         await qwen.asend(text, ev.group_id, ev.user_id)
         await bot.send(ev, qwen.get_response())
     except Exception as err:
-        await bot.send(ev, err)
+        await bot.send(ev, str(err))
 
 @sv.on_prefix('qwent')
 async def qwen_turbo_reply_prefix(bot, ev: CQEvent):
@@ -121,7 +121,7 @@ async def qwen_turbo_reply_prefix(bot, ev: CQEvent):
         await qwen.asend(text, ev.group_id, ev.user_id)
         await bot.send(ev, qwen.get_response())
     except Exception as err:
-        await bot.send(ev, err)
+        await bot.send(ev, str(err))
 
 @sv.on_prefix(('ds', 'deepseek'))
 async def deepseek_reply_prefix(bot, ev: CQEvent):
@@ -136,7 +136,7 @@ async def deepseek_reply_prefix(bot, ev: CQEvent):
         mid = mid['message_id']
         await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'ds', deepseek.payload_messages, deepseek.get_response())
     except Exception as err:
-        await bot.send(ev, err)
+        await bot.send(ev, str(err))
 
 
 @sv.on_prefix(('dsr', 'deepseekr'))
@@ -180,7 +180,7 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
             ]
             await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
     except Exception as err:
-        await bot.send(ev, err)
+        await bot.send(ev, str(err))
 
 @sv.on_message()
 async def ai_chat_continue(bot, ev):
@@ -206,7 +206,7 @@ async def ai_chat_continue(bot, ev):
                     mid = mid['message_id']
                     await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'ds', deepseek.payload_messages, deepseek.get_response())
                 except Exception as err:
-                    await bot.send(ev, err)
+                    await bot.send(ev, str(err))
             elif his_record['service'] == 'zhipu':
                 messages = his_record['messages']
                 messages.append({"role":"user", "content":msg})
@@ -218,6 +218,6 @@ async def ai_chat_continue(bot, ev):
                     mid = mid['message_id']
                     await zhipu.chat_history_record(ev.group_id, ev.user_id, mid, 'zhipu', zhipu.payload_messages, zhipu.get_response())
                 except Exception as err:
-                    await bot.send(ev, err)
+                    await bot.send(ev, str(err))
             else:
                 await bot.send(ev, f"{his_record['service']}服务暂不支持多轮对话")
