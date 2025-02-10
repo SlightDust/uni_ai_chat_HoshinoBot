@@ -73,7 +73,7 @@ class Deepseek(aichat):
                     'type': 'text'
                 },
                 'stop': None,
-                'messages': messages
+                'messages': self.payload_messages
             }
         try:
             # resp = await aiorequests.post(url, headers=self.headers, data=json.dumps(self.data), timeout = 360)
