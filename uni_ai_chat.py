@@ -205,6 +205,7 @@ async def ai_chat_continue(bot, ev):
         if his_record['mid'] == str(reply_msg_id):
             sv.logger.info(f"收到对{reply_msg_id}的回复，调用{his_record['service']}进行多轮AI对话")
             if his_record['service'] == 'ds':
+                msg.lstrip("ds")
                 messages = his_record['messages']
                 messages.append({"role":"user", "content":msg})
                 deepseek = Deepseek()
@@ -217,6 +218,7 @@ async def ai_chat_continue(bot, ev):
                 except Exception as err:
                     await bot.send(ev, str(err))
             elif his_record['service'] == 'zhipu':
+                msg.lstrip("zhipu")
                 messages = his_record['messages']
                 messages.append({"role":"user", "content":msg})
                 zhipu = Zhipu()
@@ -229,6 +231,7 @@ async def ai_chat_continue(bot, ev):
                 except Exception as err:
                     await bot.send(ev, str(err))
             elif his_record['service'] == 'dsr':
+                msg.lstrip("dsr")
                 messages = his_record['messages']
                 messages.append({"role":"user", "content":msg})
                 await bot.send(ev, '正在推理，请耐心等待...')
