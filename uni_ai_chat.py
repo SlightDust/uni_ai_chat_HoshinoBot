@@ -28,10 +28,13 @@ async def zhipu_reply_prefix(bot, ev: CQEvent):
     zhipu = Zhipu()
     try:
         await zhipu.asend(text, ev.group_id, ev.user_id)
+        try:
+            await zhipu.chat_history_record(ev.group_id, ev.user_id, mid, 'zhipu', zhipu.payload_messages, zhipu.get_response())
+        except:
+            sv.logger.error("zhipu记录聊天历史发生错误")
         reply_message = f"[CQ:reply,id={ev.message_id}]{zhipu.get_response()}"
         mid = await bot.send(ev, reply_message) 
         mid = mid['message_id']
-        await zhipu.chat_history_record(ev.group_id, ev.user_id, mid, 'zhipu', zhipu.payload_messages, zhipu.get_response())
     except Exception as err:
         await bot.send(ev, str(err))
 
@@ -131,10 +134,13 @@ async def deepseek_reply_prefix(bot, ev: CQEvent):
     deepseek = Deepseek()
     try:
         await deepseek.asend(text, ev.group_id, ev.user_id)
+        try:
+            await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'ds', deepseek.payload_messages, deepseek.get_response())
+        except: 
+            sv.logger.error("ds记录聊天历史发生错误")
         reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
         mid = await bot.send(ev, reply_message) 
         mid = mid['message_id']
-        await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'ds', deepseek.payload_messages, deepseek.get_response())
     except Exception as err:
         await bot.send(ev, str(err))
 
@@ -148,6 +154,10 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
     deepseek = Deepseek(reasoner=True)
     try:
         await deepseek.asend(text, ev.group_id, ev.user_id)
+        try:
+            await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'dsr', deepseek.payload_messages, deepseek.get_response())
+        except:
+            sv.logger.error("dsr 记录聊天历史发生错误")
         reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
         mid = await bot.send(ev, reply_message)
         mid = mid['message_id']
@@ -158,7 +168,6 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
                 await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
             except:
                 await bot.send(ev, f"发送推理过程失败")
-        await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'dsr', deepseek.payload_messages, deepseek.get_response())
     except Exception as err:
         await bot.send(ev, str(err))
 
@@ -211,10 +220,14 @@ async def ai_chat_continue(bot, ev):
                 deepseek = Deepseek()
                 try:
                     await deepseek.asend("", ev.group_id, ev.user_id, True, messages)
+                    try:
+                        await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'ds', deepseek.payload_messages, deepseek.get_response())
+                    except:
+                        sv.logger.error("ds多轮对话记录聊天历史发生错误")
+                        await bot.send(ev, f"多轮对话记录聊天历史发生错误，可能无法继续进行多轮对话")
                     reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
-                    await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'ds', deepseek.payload_messages, deepseek.get_response())
                 except Exception as err:
                     await bot.send(ev, str(err))
             elif his_record['service'] == 'zhipu':
@@ -224,10 +237,14 @@ async def ai_chat_continue(bot, ev):
                 zhipu = Zhipu()
                 try:
                     await zhipu.asend(msg, ev.group_id, ev.user_id, True, messages)
+                    try:
+                        await zhipu.chat_history_record(ev.group_id, ev.user_id, mid, 'zhipu', zhipu.payload_messages, zhipu.get_response())
+                    except:
+                        sv.logger.error("zhipu多轮对话记录聊天历史发生错误")
+                        await bot.send(ev, f"多轮对话记录聊天历史发生错误，可能无法继续进行多轮对话")
                     reply_message = f"[CQ:reply,id={ev.message_id}]{zhipu.get_response()}"
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
-                    await zhipu.chat_history_record(ev.group_id, ev.user_id, mid, 'zhipu', zhipu.payload_messages, zhipu.get_response())
                 except Exception as err:
                     await bot.send(ev, str(err))
             elif his_record['service'] == 'dsr':
@@ -238,10 +255,14 @@ async def ai_chat_continue(bot, ev):
                 deepseek = Deepseek(reasoner=True)
                 try:
                     await deepseek.asend(msg, ev.group_id, ev.user_id, True, messages)
+                    try:
+                        await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'dsr', deepseek.payload_messages, deepseek.get_response())
+                    except:
+                        sv.logger.error("dsr 多轮对话记录聊天历史发生错误")
+                        await bot.send(ev, f"多轮对话记录聊天历史发生错误，可能无法继续进行多轮对话")
                     reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
-                    await deepseek.chat_history_record(ev.group_id, ev.user_id, mid, 'dsr', deepseek.payload_messages, deepseek.get_response())
 
                     chain = deepseek_reasoning_chain(ev, deepseek)
                     if "请稍后再试" not in reply_message:
