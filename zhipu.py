@@ -17,6 +17,7 @@ class Zhipu(aichat):
     config: zhipu_Config
     
     def __init__(self):
+        super().__init__()
         self.config = zhipu_Config()
         self.headers = {
             'Authorization': f'Bearer {self.config.api_key}',
@@ -35,7 +36,7 @@ class Zhipu(aichat):
                 self.payload_messages.insert(0, {'role':'system','content': f'{self.config.system}'})
         else: # 多轮对话
             self.payload_messages = messages
-        await self.chat_history_limiter(limit=10)
+        await self.chat_history_limiter()
         self.data = {
             'model': self.config.model,
             'messages': self.payload_messages, 

@@ -38,6 +38,11 @@ class Config:
         except ValueError:  
             return 0
 
+class global_Config(Config):
+    def __init__(self):
+        super().__init__()
+        self.history_limit = self._int(self._config.get('global', 'history_limit', fallback=10))
+
 class zhipu_Config(Config):
     def __init__(self):
         super().__init__()

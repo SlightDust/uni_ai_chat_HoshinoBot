@@ -21,6 +21,7 @@ class Deepseek(aichat):
     is_good_response: bool = False
 
     def __init__(self, reasoner=False):
+        super().__init__()
         self.config = deepseek_Config()
         self.reasoner = reasoner
         self.reasoning = None
@@ -47,7 +48,7 @@ class Deepseek(aichat):
                 self.payload_messages.insert(0, {'content': self.config.system,'role':'system'})
         else: # 多轮对话
             self.payload_messages = messages
-        await self.chat_history_limiter(limit=10)
+        await self.chat_history_limiter()
         self.data = {
             'model': self.config.model if not self.reasoner else self.config.model_reasoner,
             'stream': self.config.stream,

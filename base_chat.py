@@ -1,6 +1,8 @@
 import json
 import os
 
+from .config import global_Config
+
 current_path = os.path.dirname(__file__)
 token_cost_path = os.path.join(current_path, 'token_cost.json')
 chat_history_path = os.path.join(current_path, 'chat_history.json')
@@ -23,6 +25,10 @@ class aichat:
     total_tokens: int = 0    # 总tokens
     payload_messages: list  # 对话列表
     def __init__(self):
+        self.global_config = global_Config()
+        self.history_limit = self.global_config.history_limit
+        assert isinstance(self.history_limit, int), 'history_limit must be an integer'
+        assert self.history_limit > 0, 'history_limit must be greater than 0'
         pass
 
     async def asend(self, msg, gid, uid) -> dict:
@@ -94,13 +100,15 @@ class aichat:
         with open(chat_history_path, 'w', encoding='utf-8') as f:
             json.dump(whold_data, f, ensure_ascii=False, indent=4)
     
-    async def chat_history_limiter(self, limit=10):
+    async def chat_history_limiter(self, limit=None):
         '''预处理，限制携带的历史对话轮数
         Args:
             limit (int): 限制轮数
         Returns:
             list: 携带的历史对话。同时也会直接修改self.payload_messages
         '''
+        if limit is None:
+            limit = self.history_limit
         messages = []
         if len(messages) <= limit:
             return self.payload_messages

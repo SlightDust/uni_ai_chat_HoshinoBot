@@ -15,6 +15,7 @@ class Qwen(aichat):
     config: qwen_Config
     enable_search: bool = False
     def __init__(self):
+        super().__init__()
         self.config = qwen_Config()
         self.headers = {
             'Authorization': f'Bearer {self.config.api_key}',
