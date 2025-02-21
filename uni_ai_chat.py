@@ -9,7 +9,8 @@ from .azure_openai import Azure_openai
 from .ernie import Ernie
 from .spark import Spark
 from .qwen import Qwen
-from.deepseek import Deepseek
+from .deepseek import Deepseek
+from .base_chat import aichat
 
 from .history_util import *
 
@@ -22,6 +23,18 @@ except:
 
 if type(NICKNAME)!=tuple:
     NICKNAME=[NICKNAME]
+
+def format_reply_msg(ev, aichet: aichat):
+    try:
+        pic_b64str = image_draw(aichet.get_response().strip(), do_break=True, line_width=600, font_size=16)
+        if "base64://" not in pic_b64str:  # 原文返回
+            pic = pic_b64str
+        else:  # b64图片
+            pic = f'[CQ:image,file={pic_b64str}]'
+        reply_message = f"[CQ:reply,id={ev.message_id}]{pic}"
+    except:
+        reply_message = f"[CQ:reply,id={ev.message_id}]{aichet.get_response()}"
+    return reply_message
 
 sv = Service('uni_ai_chat', enable_on_default=False)
 
@@ -142,15 +155,7 @@ async def deepseek_reply_prefix(bot, ev: CQEvent):
     deepseek = Deepseek()
     try:
         await deepseek.asend(text, ev.group_id, ev.user_id)
-        try:
-            pic_b64str = image_draw(deepseek.get_response().strip(), do_break=True, line_width=600, font_size=16)
-            if "base64://" not in pic_b64str:  # 原文返回
-                pic = pic_b64str
-            else:  # b64图片
-                pic = f'[CQ:image,file={pic_b64str}]'
-            reply_message = f"[CQ:reply,id={ev.message_id}]{pic}"
-        except:
-            reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
+        reply_message = format_reply_msg(ev, deepseek)
         mid = await bot.send(ev, reply_message)
         mid = mid['message_id']
         try:
@@ -172,12 +177,7 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
     try:
         await deepseek.asend(text, ev.group_id, ev.user_id)
         try:
-            pic_b64str = image_draw(deepseek.get_response().strip(), do_break=True, line_width=600, font_size=16)
-            if "base64://" not in pic_b64str:  # 原文返回
-                pic = pic_b64str
-            else:  # b64图片
-                pic = f'[CQ:image,file={pic_b64str}]'
-            reply_message = f"[CQ:reply,id={ev.message_id}]{pic}"
+            reply_message = format_reply_msg(ev, deepseek)
         except:
             reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
         mid = await bot.send(ev, reply_message)
