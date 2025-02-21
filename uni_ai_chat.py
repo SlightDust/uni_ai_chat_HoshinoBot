@@ -246,7 +246,8 @@ async def ai_chat_continue(bot, ev):
                 deepseek = Deepseek()
                 try:
                     await deepseek.asend("", ev.group_id, ev.user_id, True, messages)
-                    reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
+                    # reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
+                    reply_message = format_reply_msg(ev, deepseek)
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     try:
@@ -263,7 +264,8 @@ async def ai_chat_continue(bot, ev):
                 zhipu = Zhipu()
                 try:
                     await zhipu.asend(msg, ev.group_id, ev.user_id, True, messages)
-                    reply_message = f"[CQ:reply,id={ev.message_id}]{zhipu.get_response()}"
+                    # reply_message = f"[CQ:reply,id={ev.message_id}]{zhipu.get_response()}"
+                    reply_message = format_reply_msg(ev, zhipu)
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     try:
@@ -281,7 +283,8 @@ async def ai_chat_continue(bot, ev):
                 deepseek = Deepseek(reasoner=True)
                 try:
                     await deepseek.asend(msg, ev.group_id, ev.user_id, True, messages)
-                    reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
+                    # reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
+                    reply_message = format_reply_msg(ev, deepseek)
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     try:
