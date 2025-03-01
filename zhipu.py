@@ -107,7 +107,7 @@ class ZhipuV(aichat):
                 ]
             }
         ]
-        print(self.payload_messages)
+        # print(self.payload_messages)
         self.data = {
             'model': self.config.model,
             'messages': self.payload_messages, 
