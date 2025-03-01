@@ -2,6 +2,7 @@ import asyncio
 
 try:
     from .config import zhipu_Config
+    from .config import zhipuV_Config
     from .base_chat import aichat
     from hoshino import aiorequests
 except ImportError:
@@ -10,6 +11,7 @@ except ImportError:
     if _current_dir not in sys.path:
         sys.path.insert(0, _current_dir)
     from config import zhipu_Config
+    from config import zhipuV_Config
     from base_chat import aichat
     import aiorequests
 
@@ -66,11 +68,75 @@ class Zhipu(aichat):
         await self.token_cost_record(gid, uid, self.total_tokens, 'zhipu')
         return resp_j
 
+class ZhipuV(aichat):
+    '''glm支持图片输入的模型
+    '''
+    config: zhipuV_Config
+
+    def __init__(self):
+        super().__init__()
+        self.config = zhipuV_Config()
+        self.headers = {
+            'Authorization': f'Bearer {self.config.api_key}',
+            'Content-Type': 'application/json'
+        }
+    async def asend(self, txt, image_url, gid, uid):
+        # QQ图床的链接输入会报错
+        # 也不做系统提示词
+        # GLM-4V-Flash 不支持base64编码
+        url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+        self.payload_messages = [
+            {
+                'role': 'user',
+                'content': [
+                    {
+                        'type':'text',
+                        'text': txt
+                    },
+                    {
+                        'type': 'image_url',
+                        'image_url': {
+                            'url': image_url
+                        }
+                    }
+                ]
+            }
+        ]
+        print(self.payload_messages)
+        self.data = {
+            'model': self.config.model,
+            'messages': self.payload_messages, 
+            'max_tokens': self.config.max_tokens,
+            'temperature': self.config.temperature,
+            'top_p': self.config.top_p,
+            'user_id': str(uid),
+        }
+        resp = await aiorequests.post(f'{url}', headers=self.headers, json=self.data)
+        resp_j = await resp.json()
+        print(resp_j)
+        if "error" in resp_j.keys():
+            # 发生错误
+            # 智谱的错误信息是汉语，就不画蛇添足了，直接返回。https://open.bigmodel.cn/dev/api#error-code-v3
+            error_code = resp_j['error']['code']
+            error_message = resp_j['error']['message']
+            self.response = f"发生错误:\ncode: {error_code}\n{error_message}"
+            return resp_j
+        self.response = resp_j['choices'][0]['message']['content']
+        self.usage = resp_j['usage']
+        self.completion_tokens = int(resp_j['usage']['completion_tokens'])
+        self.prompt_tokens = int(resp_j['usage']['prompt_tokens'])
+        self.total_tokens = int(resp_j['usage']['total_tokens'])
+        await self.token_cost_record(gid, uid, self.total_tokens, 'zhipuV')
+        return resp_j
+
+
 if __name__ == '__main__':
     async def task1():
         print("Task 1 is running")
-        zhipu = Zhipu()
-        await zhipu.asend('非对称加密在生活中有哪些常见应用', 112233445566, 123456)
+        # zhipu = Zhipu()
+        # await zhipu.asend('非对称加密在生活中有哪些常见应用', 112233445566, 123456)
+        zhipu = ZhipuV()
+        await zhipu.asend('怎么理解这张图',"", 112233445566, 123456)
         print(zhipu.get_response())
         print(zhipu.get_usage())
         print("Task 1 completed")

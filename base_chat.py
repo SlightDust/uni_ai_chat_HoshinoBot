@@ -1,7 +1,14 @@
 import json
 import os
 
-from .config import global_Config
+try:
+    from .config import global_Config
+except ImportError:
+    import sys
+    _current_dir = os.path.dirname(__file__)
+    if _current_dir not in sys.path:
+        sys.path.insert(0, _current_dir)
+    from config import global_Config
 
 current_path = os.path.dirname(__file__)
 token_cost_path = os.path.join(current_path, 'token_cost.json')

@@ -54,6 +54,16 @@ class zhipu_Config(Config):
         self.system = self._config.get('zhipu','system')
         self.use_web_search = self._config.getboolean('zhipu', 'use_web_search', fallback=True)
 
+class zhipuV_Config(Config):    
+    def __init__(self):
+        super().__init__()
+        self.api_key = self._config.get('zhipuV', 'api_key')
+        self.model = self._config.get('zhipuV','model')
+        self.max_tokens = self._int(self._config.get('zhipuV','max_tokens'))
+        self.temperature = self._float(self._config.get('zhipuV', 'temperature', fallback=0.9))
+        self.top_p = self._float(self._config.get('zhipuV', 'top_p', fallback=0.7))
+        self.system = self._config.get('zhipuV','system')
+
 class azure_openai_Config(Config):
     def __init__(self):
         super().__init__()
