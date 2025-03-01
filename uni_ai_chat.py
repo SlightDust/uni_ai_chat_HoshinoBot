@@ -1,10 +1,14 @@
 import re
 import random
 from asyncio import sleep as asleep
+
+from nonebot.command.argfilter.extractors import extract_image_urls
+
 from hoshino import Service
 from hoshino.typing import CQEvent
 from hoshino.config import NICKNAME
 from .zhipu import Zhipu
+from .zhipu import ZhipuV
 from .azure_openai import Azure_openai
 from .ernie import Ernie
 from .spark import Spark
@@ -56,6 +60,24 @@ async def zhipu_reply_prefix(bot, ev: CQEvent):
         except Exception as e:
             sv.logger.error("zhipu记录聊天历史发生错误")
             await bot.send(ev, f"zhipu记录聊天历史发生错误{str(e)}")
+    except Exception as err:
+        await bot.send(ev, str(err))
+
+@sv.on_prefix('glmv')
+async def zhipu_vision_reply_prefix(bot, ev: CQEvent):
+    text = str(ev.message.extract_plain_text()).strip()
+    if text == '' or text in black_word:
+        return
+    image = extract_image_urls(ev.message)
+    if len(image) == 0:
+        await bot.send(ev, "请在同一条消息内发送文字和图片")
+        return
+    image = image[0]
+    zhipuv = ZhipuV()
+    try:
+        await zhipuv.asend(text, image, ev.group_id, ev.user_id)
+        reply_message = f"[CQ:reply,id={ev.message_id}]{zhipuv.get_response()}"
+        await bot.send(ev, reply_message) 
     except Exception as err:
         await bot.send(ev, str(err))
 
