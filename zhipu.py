@@ -1,4 +1,5 @@
 import asyncio
+import base64,httpx
 
 try:
     from .config import zhipu_Config
@@ -84,6 +85,10 @@ class ZhipuV(aichat):
         # QQ图床的链接输入会报错
         # 也不做系统提示词
         # GLM-4V-Flash 不支持base64编码
+        pic_ok, b64 = await url2b64(image_url)
+        if not pic_ok:
+            self.response = "本地下载图片出错"
+            return
         url = "https://open.bigmodel.cn/api/paas/v4/chat/completions"
         self.payload_messages = [
             {
@@ -96,7 +101,7 @@ class ZhipuV(aichat):
                     {
                         'type': 'image_url',
                         'image_url': {
-                            'url': image_url
+                            'url': b64
                         }
                     }
                 ]
@@ -126,9 +131,32 @@ class ZhipuV(aichat):
         self.completion_tokens = int(resp_j['usage']['completion_tokens'])
         self.prompt_tokens = int(resp_j['usage']['prompt_tokens'])
         self.total_tokens = int(resp_j['usage']['total_tokens'])
-        await self.token_cost_record(gid, uid, self.total_tokens, 'zhipuV')
+        await self.token_cost_record(gid, uid, self.total_tokens, self.config.model)
         return resp_j
 
+async def url2b64(url, timeout=10, b_use_system_proxy=False):
+    '''
+    将url中的内容转换为base64字符串
+    Args:
+      url(str): 网址
+      timeout(int): 超时时间
+      b_use_system_proxy(bool): 是否使用系统代理
+    Returns:
+      tuple: (是否成功, base64字符串)
+    '''
+    try:
+        async with httpx.AsyncClient(proxies=None, timeout=timeout, trust_env=b_use_system_proxy) as client:
+            response = await client.get(url, timeout=timeout)
+            if response.status_code == 200:
+                is_success = True
+                b64str = base64.b64encode(response.content).decode('utf-8')
+            else:
+                is_success = False
+                b64str = None
+    except Exception as e:
+        is_success = False
+        b64str = None
+    return is_success, b64str
 
 if __name__ == '__main__':
     async def task1():
