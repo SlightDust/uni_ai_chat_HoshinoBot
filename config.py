@@ -144,7 +144,7 @@ class deepseek_Config(Config):
         self.stream = self._config.getboolean('deepseek','stream')
         self.system = self._config.get('deepseek','system')
         self.max_tokens = self._int(self._config.get('deepseek','max_tokens'))
-        
+        self.breasoner_with_system = self._config.getboolean('deepseek', 'breasoner_with_system', fallback=False)
 
 
 

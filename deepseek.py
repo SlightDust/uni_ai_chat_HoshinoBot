@@ -23,7 +23,7 @@ class Deepseek(aichat):
     def __init__(self, reasoner=False):
         super().__init__()
         self.config = deepseek_Config()
-        self.reasoner = reasoner
+        self.reasoner = reasoner  # 是否调用推理模型
         self.reasoning = None
         self.headers = {
             'Authorization': f'Bearer {self.config.api_key}',
@@ -44,7 +44,10 @@ class Deepseek(aichat):
                         'role': 'user'
                     }
                 ]
-            if self.config.system:
+            # 多轮对话时历史记录有system，所以这里缩进了一下
+            # 1 是推理、要带上推理
+            # 2 不是推理、有system
+            if self.config.system and ((self.reasoner and self.config.breasoner_with_system) or not self.reasoner):
                 self.payload_messages.insert(0, {'content': self.config.system,'role':'system'})
         else: # 多轮对话
             self.payload_messages = messages
@@ -116,6 +119,7 @@ class Deepseek(aichat):
             return resp_j
     
     def get_reasoning(self):
+        '''返回推理过程'''
         return self.reasoning
         
 if __name__ == '__main__':
