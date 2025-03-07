@@ -12,7 +12,7 @@ from .zhipu import ZhipuV
 from .azure_openai import Azure_openai
 from .ernie import Ernie
 from .spark import Spark
-from .qwen import Qwen, QwenSSE
+from .qwen import Qwen, QwenQwQ
 from .deepseek import Deepseek
 from .base_chat import aichat
 
@@ -177,7 +177,7 @@ async def qwq_reply_prefix(bot, ev: CQEvent):
     if text == '' or text in black_word:
         return
     await bot.send(ev, '正在推理，请耐心等待...')
-    qwenqwq = QwenSSE()
+    qwenqwq = QwenQwQ()
     try:
         await qwenqwq.asend(text, ev.group_id, ev.user_id)
         reply_message = _format_reply_msg(ev, qwenqwq)
@@ -352,7 +352,7 @@ async def ai_chat_continue(bot, ev):
                 messages = his_record['messages']
                 messages.append({"role":"user", "content":msg})
                 await bot.send(ev, '正在推理，请耐心等待...')
-                qwenqwq = QwenSSE()
+                qwenqwq = QwenQwQ()
                 try:
                     await qwenqwq.asend(msg, ev.group_id, ev.user_id, True, messages)
                     reply_message = _format_reply_msg(ev, qwenqwq)

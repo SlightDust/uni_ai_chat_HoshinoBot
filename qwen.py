@@ -63,7 +63,7 @@ class Qwen(aichat):
         await self.token_cost_record(gid, uid, self.total_tokens, self.data['model'])
         return resp_j
         
-class QwenSSE(aichat):
+class QwenQwQ(aichat):
     config: qwen_Config
     def __init__(self):
         super().__init__()
@@ -101,18 +101,12 @@ class QwenSSE(aichat):
             self.response = f"发送请求或解析SSE时发生错误{str(e)}"
             return
         await self.token_cost_record_new(gid, uid, self.usage, self.data['model'])
-        # self.reasoning = reasoning
-        # self.response = res_text
-        # self.usage = usage
-        # print(reasoning)
-        # print(res_text)
-        # print(usage)
 
 if __name__ == '__main__':
     import asyncio
     async def task1():
         print("Task 1 is running")
-        qwen = QwenSSE()
+        qwen = QwenQwQ()
         qwen.enable_search = False
         await qwen.asend('3.9和3.11哪个大', 112233445566, 1)
         print(qwen.get_response())
