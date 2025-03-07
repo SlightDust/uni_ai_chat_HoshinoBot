@@ -41,14 +41,6 @@ def _format_reply_msg(ev, aichet: aichat):
         reply_message = f"[CQ:reply,id={ev.message_id}]{aichet.get_response()}"
     return reply_message
 
-def confirm_reply_msg(ev, aichet: aichat):
-    '''编制回复消息'''
-    try:
-        reply_message = _format_reply_msg(ev, aichet)
-    except:
-        reply_message = f"[CQ:reply,id={ev.message_id}]{aichet.get_response()}"
-    return reply_message
-
 
 sv = Service('uni_ai_chat', enable_on_default=False)
 
@@ -62,7 +54,7 @@ async def zhipu_reply_prefix(bot, ev: CQEvent):
     zhipu = Zhipu()
     try:
         await zhipu.asend(text, ev.group_id, ev.user_id)
-        reply_message = confirm_reply_msg(ev, zhipu)
+        reply_message = _format_reply_msg(ev, zhipu)
         mid = await bot.send(ev, reply_message)
         mid = mid['message_id']
         try:
@@ -188,7 +180,7 @@ async def qwq_reply_prefix(bot, ev: CQEvent):
     qwenqwq = QwenSSE()
     try:
         await qwenqwq.asend(text, ev.group_id, ev.user_id)
-        reply_message = confirm_reply_msg(ev, qwenqwq)
+        reply_message = _format_reply_msg(ev, qwenqwq)
         mid = await bot.send(ev, reply_message)
         mid = mid['message_id']
         try:
@@ -213,7 +205,7 @@ async def deepseek_reply_prefix(bot, ev: CQEvent):
     deepseek = Deepseek()
     try:
         await deepseek.asend(text, ev.group_id, ev.user_id)
-        reply_message = confirm_reply_msg(ev, deepseek)
+        reply_message = _format_reply_msg(ev, deepseek)
         mid = await bot.send(ev, reply_message)
         mid = mid['message_id']
         try:
@@ -234,7 +226,7 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
     deepseek = Deepseek(reasoner=True)
     try:
         await deepseek.asend(text, ev.group_id, ev.user_id)
-        reply_message = confirm_reply_msg(ev, deepseek)
+        reply_message = _format_reply_msg(ev, deepseek)
         mid = await bot.send(ev, reply_message)
         mid = mid['message_id']
         try:
@@ -302,7 +294,7 @@ async def ai_chat_continue(bot, ev):
                 try:
                     await deepseek.asend("", ev.group_id, ev.user_id, True, messages)
                     # reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
-                    reply_message = confirm_reply_msg(ev, deepseek)
+                    reply_message = _format_reply_msg(ev, deepseek)
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     try:
@@ -320,7 +312,7 @@ async def ai_chat_continue(bot, ev):
                 try:
                     await zhipu.asend(msg, ev.group_id, ev.user_id, True, messages)
                     # reply_message = f"[CQ:reply,id={ev.message_id}]{zhipu.get_response()}"
-                    reply_message = confirm_reply_msg(ev, zhipu)
+                    reply_message = _format_reply_msg(ev, zhipu)
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     try:
@@ -339,7 +331,7 @@ async def ai_chat_continue(bot, ev):
                 try:
                     await deepseek.asend(msg, ev.group_id, ev.user_id, True, messages)
                     # reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
-                    reply_message = confirm_reply_msg(ev, deepseek)
+                    reply_message = _format_reply_msg(ev, deepseek)
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     try:
@@ -363,7 +355,7 @@ async def ai_chat_continue(bot, ev):
                 qwenqwq = QwenSSE()
                 try:
                     await qwenqwq.asend(msg, ev.group_id, ev.user_id, True, messages)
-                    reply_message = confirm_reply_msg(ev, qwenqwq)
+                    reply_message = _format_reply_msg(ev, qwenqwq)
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     try:
