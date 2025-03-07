@@ -178,7 +178,18 @@ async def qwq_reply_prefix(bot, ev: CQEvent):
     qwenqwq = QwenSSE()
     try:
         await qwenqwq.asend(text, ev.group_id, ev.user_id)
-        await bot.send(ev, qwenqwq.get_response())
+        try:
+            reply_message = format_reply_msg(ev, qwenqwq)
+        except:
+            reply_message = f"[CQ:reply,id={ev.message_id}]{qwenqwq.get_response()}"
+        mid = await bot.send(ev, reply_message)
+        mid = mid['message_id']
+        try:
+            await qwenqwq.chat_history_record(ev.group_id, ev.user_id, mid, 'qwq', qwenqwq.payload_messages, qwenqwq.get_response())
+        except Exception as e:
+            sv.logger.error("qwq 记录聊天历史发生错误")
+            await bot.send(ev, f"qwq 记录聊天历史发生错误{e}")
+        await asleep(1)
         chain = deepseek_reasoning_chain(ev, qwenqwq)
         try:
             await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
@@ -340,5 +351,30 @@ async def ai_chat_continue(bot, ev):
                             await bot.send(ev, f"发送推理过程失败")
                 except Exception as err:
                     await bot.send(ev, str(err))
+            elif his_record['service'] == 'qwq':
+                msg.lstrip("qwq")
+                messages = his_record['messages']
+                messages.append({"role":"user", "content":msg})
+                await bot.send(ev, '正在推理，请耐心等待...')
+                qwenqwq = QwenSSE()
+                try:
+                    await qwenqwq.asend(msg, ev.group_id, ev.user_id, True, messages)
+                    reply_message = format_reply_msg(ev, qwenqwq)
+                    mid = await bot.send(ev, reply_message)
+                    mid = mid['message_id']
+                    try:
+                        await qwenqwq.chat_history_record(ev.group_id, ev.user_id, mid, 'qwq', qwenqwq.payload_messages, qwenqwq.get_response())
+                    except:
+                        sv.logger.error("qwq 多轮对话记录聊天历史发生错误")
+                        await bot.send(ev, f"多轮对话记录聊天历史发生错误，可能无法继续进行多轮对话")
+                    chain = deepseek_reasoning_chain(ev, qwenqwq)
+                    try:
+                        await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
+                    except:
+                        await bot.send(ev, f"发送推理过程失败")
+                except Exception as err:
+                    await bot.send(ev, str(err))
             else:
                 await bot.send(ev, f"{his_record['service']}服务暂不支持多轮对话")
+        else: # 没有匹配到历史对话
+            pass

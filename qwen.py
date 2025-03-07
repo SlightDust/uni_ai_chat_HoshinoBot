@@ -73,23 +73,33 @@ class QwenSSE(aichat):
             'Content-Type': 'application/json'
         }
     
-    async def asend(self, msg, gid, uid):
+    async def asend(self, msg, gid, uid, continue_flag=False, message:list=None):
+        if not continue_flag:
+            self.payload_messages = [
+                {
+                    "role": "user",
+                    "content": msg
+                }
+            ]
+        else:  #多轮对话
+            self.payload_messages = message
+        await self.chat_history_limiter(10)
         self.data = {
             "model": self.config.model_QwQ,
             "stream": True,
             "stream_options": {
                 "include_usage": True
             },
-            "messages": [
-                {
-                    "role": "user",
-                    "content": msg
-                }
-            ]
+            "messages": self.payload_messages,
         }
-        async with httpx.AsyncClient(proxies=None, trust_env=False) as client:
-            async with client.stream("POST", self.config.url, headers=self.headers, json=self.data) as sse_response:
-                await self.openai_like_sse_process(sse_response)
+        try:
+            async with httpx.AsyncClient(proxies=None, trust_env=False) as client:
+                async with client.stream("POST", self.config.url, headers=self.headers, json=self.data) as sse_response:
+                    await self.openai_like_sse_process(sse_response)
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            self.response = f"发送请求或解析SSE时发生错误{str(e)}"
+            return
         await self.token_cost_record_new(gid, uid, self.usage, self.data['model'])
         # self.reasoning = reasoning
         # self.response = res_text
