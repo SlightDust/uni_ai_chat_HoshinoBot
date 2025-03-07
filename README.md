@@ -14,14 +14,29 @@ Spark不得不用websocket……
 - [Qwen（通义千问）](https://bailian.console.aliyun.com/) （预留了调qwen-long和qwen-turbo两个命令）
 - [deepseek](https://www.deepseek.com/)（ds和dsr两个命令）  
 
+### 默认指令 / 用法
+可以按需修改uni_ai_chat.py和config.ini
+| 指令 | 说明 |
+| --- | --- |
+| glm 问题 / zhipu 问题 | 向glm提问 |
+| glmv 问题\(附带1张图片\) | 向glm-4V提问，可以解析图片 |
+| ernie 问题 | 向文心一言免费模型提问，不支持网络搜索 |
+| webernie 问题 | 向文心一言收费模型提问，支持网络搜索 |
+| spark 问题 | 向讯飞星火免费模型提问 |
+| qwenl 问题 | 向通义千问qwen-long模型提问 |
+| qwent 问题 | 向通义千问qwen-turbo模型提问 |
+| qwq 问题 | 向通义千问QwQ模型提问 |
+| ds 问题 | 向deepseek-v3提问 |
+| dsr 问题 | 向deepseek-r1提问 |
+| 对bot回答回复 | 进行多轮对话 |
+
 ### 适配中
 - [便携AI转发的OpenAI](https://api.bianxieai.com/)  ←摸了
-- 智谱的图像识别模型GLM-4V-Flash。
 - and so on...
 
 ## 局限
 - 代码很粗糙
-- 智谱和deepseek做了多轮对话，其他几个用的不多，摸了
+- 智谱、deepseek、qwq做了多轮对话，其他几个用的不多，摸了
 
 ## 免费资源
 目前（2024.05.22），以下大模型API可以免费使用：
