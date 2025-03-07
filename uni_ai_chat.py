@@ -28,7 +28,8 @@ except:
 if type(NICKNAME)!=tuple:
     NICKNAME=[NICKNAME]
 
-def format_reply_msg(ev, aichet: aichat):
+def _format_reply_msg(ev, aichet: aichat):
+    '''编制回复消息'''
     try:
         pic_b64str = image_draw(aichet.get_response().strip(), do_break=True, line_width=600, font_size=16)
         if "base64://" not in pic_b64str:  # 原文返回
@@ -39,6 +40,15 @@ def format_reply_msg(ev, aichet: aichat):
     except:
         reply_message = f"[CQ:reply,id={ev.message_id}]{aichet.get_response()}"
     return reply_message
+
+def confirm_reply_msg(ev, aichet: aichat):
+    '''编制回复消息'''
+    try:
+        reply_message = _format_reply_msg(ev, aichet)
+    except:
+        reply_message = f"[CQ:reply,id={ev.message_id}]{aichet.get_response()}"
+    return reply_message
+
 
 sv = Service('uni_ai_chat', enable_on_default=False)
 
@@ -52,8 +62,8 @@ async def zhipu_reply_prefix(bot, ev: CQEvent):
     zhipu = Zhipu()
     try:
         await zhipu.asend(text, ev.group_id, ev.user_id)
-        reply_message = f"[CQ:reply,id={ev.message_id}]{zhipu.get_response()}"
-        mid = await bot.send(ev, reply_message) 
+        reply_message = confirm_reply_msg(ev, zhipu)
+        mid = await bot.send(ev, reply_message)
         mid = mid['message_id']
         try:
             await zhipu.chat_history_record(ev.group_id, ev.user_id, mid, 'zhipu', zhipu.payload_messages, zhipu.get_response())
@@ -178,10 +188,7 @@ async def qwq_reply_prefix(bot, ev: CQEvent):
     qwenqwq = QwenSSE()
     try:
         await qwenqwq.asend(text, ev.group_id, ev.user_id)
-        try:
-            reply_message = format_reply_msg(ev, qwenqwq)
-        except:
-            reply_message = f"[CQ:reply,id={ev.message_id}]{qwenqwq.get_response()}"
+        reply_message = confirm_reply_msg(ev, qwenqwq)
         mid = await bot.send(ev, reply_message)
         mid = mid['message_id']
         try:
@@ -206,7 +213,7 @@ async def deepseek_reply_prefix(bot, ev: CQEvent):
     deepseek = Deepseek()
     try:
         await deepseek.asend(text, ev.group_id, ev.user_id)
-        reply_message = format_reply_msg(ev, deepseek)
+        reply_message = confirm_reply_msg(ev, deepseek)
         mid = await bot.send(ev, reply_message)
         mid = mid['message_id']
         try:
@@ -227,10 +234,7 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
     deepseek = Deepseek(reasoner=True)
     try:
         await deepseek.asend(text, ev.group_id, ev.user_id)
-        try:
-            reply_message = format_reply_msg(ev, deepseek)
-        except:
-            reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
+        reply_message = confirm_reply_msg(ev, deepseek)
         mid = await bot.send(ev, reply_message)
         mid = mid['message_id']
         try:
@@ -298,7 +302,7 @@ async def ai_chat_continue(bot, ev):
                 try:
                     await deepseek.asend("", ev.group_id, ev.user_id, True, messages)
                     # reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
-                    reply_message = format_reply_msg(ev, deepseek)
+                    reply_message = confirm_reply_msg(ev, deepseek)
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     try:
@@ -316,7 +320,7 @@ async def ai_chat_continue(bot, ev):
                 try:
                     await zhipu.asend(msg, ev.group_id, ev.user_id, True, messages)
                     # reply_message = f"[CQ:reply,id={ev.message_id}]{zhipu.get_response()}"
-                    reply_message = format_reply_msg(ev, zhipu)
+                    reply_message = confirm_reply_msg(ev, zhipu)
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     try:
@@ -335,7 +339,7 @@ async def ai_chat_continue(bot, ev):
                 try:
                     await deepseek.asend(msg, ev.group_id, ev.user_id, True, messages)
                     # reply_message = f"[CQ:reply,id={ev.message_id}]{deepseek.get_response()}"
-                    reply_message = format_reply_msg(ev, deepseek)
+                    reply_message = confirm_reply_msg(ev, deepseek)
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     try:
@@ -344,7 +348,7 @@ async def ai_chat_continue(bot, ev):
                         sv.logger.error("dsr 多轮对话记录聊天历史发生错误")
                         await bot.send(ev, f"多轮对话记录聊天历史发生错误，可能无法继续进行多轮对话")
                     chain = deepseek_reasoning_chain(ev, deepseek)
-                    if "请稍后再试" not in reply_message:
+                    if "请稍后再试" not in deepseek:
                         try:
                             await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
                         except:
@@ -359,7 +363,7 @@ async def ai_chat_continue(bot, ev):
                 qwenqwq = QwenSSE()
                 try:
                     await qwenqwq.asend(msg, ev.group_id, ev.user_id, True, messages)
-                    reply_message = format_reply_msg(ev, qwenqwq)
+                    reply_message = confirm_reply_msg(ev, qwenqwq)
                     mid = await bot.send(ev, reply_message)
                     mid = mid['message_id']
                     try:
