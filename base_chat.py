@@ -26,6 +26,7 @@ class aichat:
     headers: dict  # 请求头
     data: dict     # 请求数据
     response: str  # 响应数据
+    reasoning: str # 推理过程
     usage: dict    # 消耗tokens，包含下面三个
     completion_tokens: int   # 补全tokens
     prompt_tokens: int       # 提示词tokens
@@ -41,6 +42,34 @@ class aichat:
     async def asend(self, msg, gid, uid) -> dict:
         '''异步，向AI提问'''
         pass
+
+    async def openai_like_sse_process(self, sse_response):
+        '''处理openai兼容接口流式返回的数据'''
+        res_text:str = ''
+        reasoning:str = ''
+        usage:dict = {}
+        async for line in sse_response.aiter_lines():
+            if line.startswith('data:'):
+                data = line[5:].strip()
+                try:
+                    json_data = json.loads(data)
+                    # print(json_data)
+                    if len(json_data['choices'])==0: # DONE前最后一个Event
+                        usage = json_data['usage']
+                    elif 'reasoning_content' in json_data['choices'][0]['delta'] and json_data['choices'][0]['delta']['reasoning_content']:
+                        reasoning += json_data['choices'][0]['delta']['reasoning_content']
+                    elif 'content' in json_data['choices'][0]['delta'] and json_data['choices'][0]['delta']['content']:
+                        res_text += json_data['choices'][0]['delta']['content']
+                except json.JSONDecodeError:
+                    if data.strip() == "[DONE]":
+                        print("Done")
+                        break
+        self.reasoning = reasoning
+        self.response = res_text
+        self.usage = usage
+        self.completion_tokens = int(usage['completion_tokens'])
+        self.prompt_tokens = int(usage['prompt_tokens'])
+        self.total_tokens = int(usage['total_tokens'])
 
     async def token_cost_record(self, gid, uid, cost, api):
         '''记录token消耗
@@ -130,6 +159,10 @@ class aichat:
     def get_response(self):
         '''获取AI响应'''
         return self.response.strip()
+
+    def get_reasoning(self):
+        '''返回推理过程'''
+        return self.reasoning
     
     def get_usage(self):
         '''获取本次调用消耗的总tokens'''
