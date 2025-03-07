@@ -130,6 +130,11 @@ class qwen_Config(Config):
         self.temperature = self._float(self._config.get('qwen', 'temperature'))
         self.system = self._config.get('qwen','system')
 
+        self.model_QwQ = self._config.get('qwen','model_QwQ',fallback='qwq-32b')
+        self.top_p_QwQ = self._float(self._config.get('qwen', 'top_p_QwQ', fallback=0.8))
+        self.emperature_QwQ = self._float(self._config.get('qwen', 'temperature_QwQ', fallback=0.7))
+        self.max_tokens_QwQ = self._int(self._config.get('qwen','max_tokens_QwQ', fallback=4096))
+
 class deepseek_Config(Config):
     def __init__(self):
         super().__init__()

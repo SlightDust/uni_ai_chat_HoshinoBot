@@ -24,7 +24,6 @@ class Deepseek(aichat):
         super().__init__()
         self.config = deepseek_Config()
         self.reasoner = reasoner  # 是否调用推理模型
-        self.reasoning = None
         self.headers = {
             'Authorization': f'Bearer {self.config.api_key}',
             'Content-Type': 'application/json',
@@ -117,10 +116,6 @@ class Deepseek(aichat):
             elif finish_reason == 'insufficient_system_resource':
                 self.response += "\n\n...系统推理资源不足，生成被打断。"
             return resp_j
-    
-    def get_reasoning(self):
-        '''返回推理过程'''
-        return self.reasoning
         
 if __name__ == '__main__':
     async def task1():

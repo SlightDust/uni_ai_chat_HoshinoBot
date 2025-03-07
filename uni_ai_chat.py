@@ -12,7 +12,7 @@ from .zhipu import ZhipuV
 from .azure_openai import Azure_openai
 from .ernie import Ernie
 from .spark import Spark
-from .qwen import Qwen
+from .qwen import Qwen, QwenSSE
 from .deepseek import Deepseek
 from .base_chat import aichat
 
@@ -169,6 +169,24 @@ async def qwen_turbo_reply_prefix(bot, ev: CQEvent):
     except Exception as err:
         await bot.send(ev, str(err))
 
+@sv.on_prefix(('qwq','QwQ'))
+async def qwq_reply_prefix(bot, ev: CQEvent):
+    text = str(ev.message.extract_plain_text()).strip()
+    if text == '' or text in black_word:
+        return
+    await bot.send(ev, '正在推理，请耐心等待...')
+    qwenqwq = QwenSSE()
+    try:
+        await qwenqwq.asend(text, ev.group_id, ev.user_id)
+        await bot.send(ev, qwenqwq.get_response())
+        chain = deepseek_reasoning_chain(ev, qwenqwq)
+        try:
+            await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
+        except:
+            await bot.send(ev, f"发送推理过程失败")
+    except Exception as err:
+        await bot.send(ev, str(err))
+
 @sv.on_prefix(('ds', 'deepseek'))
 async def deepseek_reply_prefix(bot, ev: CQEvent):
     text = str(ev.message.extract_plain_text()).strip()
@@ -219,7 +237,7 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
     except Exception as err:
         await bot.send(ev, str(err))
 
-def deepseek_reasoning_chain(ev, deepseek:Deepseek):
+def deepseek_reasoning_chain(ev, deepseek):
         chain = [
             {"type": "node",
             "data": {"name": str(NICKNAME[0]),

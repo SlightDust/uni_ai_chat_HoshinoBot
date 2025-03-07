@@ -1,6 +1,7 @@
 try:
     from .config import qwen_Config
     from .base_chat import aichat
+    import httpx, json
     from hoshino import aiorequests
 except ImportError:
     import sys, os
@@ -9,6 +10,7 @@ except ImportError:
         sys.path.insert(0, _current_dir)
     from config import qwen_Config
     from base_chat import aichat
+    import httpx, json
     import aiorequests
 
 class Qwen(aichat):
@@ -61,14 +63,48 @@ class Qwen(aichat):
         await self.token_cost_record(gid, uid, self.total_tokens, self.data['model'])
         return resp_j
         
+class QwenSSE(aichat):
+    config: qwen_Config
+    def __init__(self):
+        super().__init__()
+        self.config = qwen_Config()
+        self.headers = {
+            'Authorization': f'Bearer {self.config.api_key}',
+            'Content-Type': 'application/json'
+        }
+    
+    async def asend(self, msg, gid, uid):
+        self.data = {
+            "model": self.config.model_QwQ,
+            "stream": True,
+            "stream_options": {
+                "include_usage": True
+            },
+            "messages": [
+                {
+                    "role": "user",
+                    "content": msg
+                }
+            ]
+        }
+        async with httpx.AsyncClient(proxies=None, trust_env=False) as client:
+            async with client.stream("POST", self.config.url, headers=self.headers, json=self.data) as sse_response:
+                await self.openai_like_sse_process(sse_response)
+        await self.token_cost_record_new(gid, uid, self.usage, self.data['model'])
+        # self.reasoning = reasoning
+        # self.response = res_text
+        # self.usage = usage
+        # print(reasoning)
+        # print(res_text)
+        # print(usage)
 
 if __name__ == '__main__':
     import asyncio
     async def task1():
         print("Task 1 is running")
-        qwen = Qwen()
+        qwen = QwenSSE()
         qwen.enable_search = False
-        await qwen.asend('如何结束俄乌冲突', 112233445566, 1)
+        await qwen.asend('3.9和3.11哪个大', 112233445566, 1)
         print(qwen.get_response())
         print(qwen.get_usage())
         print("Task 1 completed")
