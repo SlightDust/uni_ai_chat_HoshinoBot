@@ -17,9 +17,9 @@ def render_markdown():
     if request.method == 'POST':
         markdown_content = request.get_data(as_text=True)
         if not markdown_content:
-            return jsonify({'error': 'Markdown content is required'}), 400
+            return jsonify({'error': 'Markdown content is required', 'status':'error', 'url':''}), 400
 
-        html_content = markdown2.markdown(markdown_content)
+        html_content = markdown2.markdown(markdown_content, extras=['fenced-code-blocks', 'tables', 'header-ids', 'toc', 'footnotes'])
         filename = str(uuid.uuid4()) + '.html'
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
 
@@ -27,7 +27,7 @@ def render_markdown():
             f.write(html_content)
 
         url = f'/md/{filename}'
-        return jsonify({'url': url}), 200
+        return jsonify({'url': url, 'status':'success', 'status':'ok'}), 200
 
 @app.route('/md/<path:filename>', methods=['GET'])
 def get_markdown_file(filename):
@@ -37,7 +37,7 @@ def get_markdown_file(filename):
             content = f.read()
         return content, 200
     else:
-        return jsonify({'error': 'File not found'}), 404
+        return jsonify({'error': 'File not found', 'status':'error', 'url':''}), 404
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5921)
