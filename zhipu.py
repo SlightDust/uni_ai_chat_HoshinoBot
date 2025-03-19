@@ -66,7 +66,7 @@ class Zhipu(aichat):
         self.completion_tokens = int(resp_j['usage']['completion_tokens'])
         self.prompt_tokens = int(resp_j['usage']['prompt_tokens'])
         self.total_tokens = int(resp_j['usage']['total_tokens'])
-        await self.token_cost_record(gid, uid, self.total_tokens, 'zhipu')
+        await self.token_cost_record(gid, uid, self.total_tokens, self.config.model)
         return resp_j
 
 class ZhipuV(aichat):
