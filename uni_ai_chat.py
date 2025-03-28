@@ -236,7 +236,7 @@ async def deepseek_reasoner_reply_prefix(bot, ev: CQEvent):
             await bot.send(ev, f"dsr 记录聊天历史发生错误{e}")
         await asleep(1)
         chain = deepseek_reasoning_chain(ev, deepseek)
-        if "请稍后再试" not in reply_message:
+        if "请稍后再试" not in deepseek.get_response():
             try:
                 await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
             except:
@@ -340,7 +340,7 @@ async def ai_chat_continue(bot, ev):
                         sv.logger.error("dsr 多轮对话记录聊天历史发生错误")
                         await bot.send(ev, f"多轮对话记录聊天历史发生错误，可能无法继续进行多轮对话")
                     chain = deepseek_reasoning_chain(ev, deepseek)
-                    if "请稍后再试" not in deepseek:
+                    if "请稍后再试" not in deepseek.get_response():
                         try:
                             await bot.send_group_forward_msg(group_id=ev.group_id, messages=chain)
                         except:
