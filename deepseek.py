@@ -35,7 +35,7 @@ class Deepseek(aichat):
         continue_flag: 是否为多轮对话
         messages: 已经拼接好的多轮对话的历史消息，0是system，-1是最后一个用户输入，中间是多轮对话
         '''
-        url = self.config.url
+        url = self.config.url if not self.reasoner else self.config.url_special
         if not continue_flag:
             self.payload_messages = [
                     {
