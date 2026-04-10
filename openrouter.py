@@ -20,7 +20,7 @@ class Openrouter(aichat):
     def __init__(self, reasoner: bool = False):
         super().__init__()
         self.config = openrouter_Config()
-        self.reasoner = reasoner  # 是否调用推理模型
+        self.reasoner = reasoner  # 是否开启推理
         self.headers = {
             'Authorization': f'Bearer {self.config.api_key}',
             'Content-Type': 'application/json',
