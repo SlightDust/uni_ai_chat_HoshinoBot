@@ -71,13 +71,14 @@ class aichat:
         self.prompt_tokens = int(usage['prompt_tokens'])
         self.total_tokens = int(usage['total_tokens'])
 
-    async def token_cost_record(self, gid, uid, cost, api):
+    async def token_cost_record(self, gid, uid, token, api, cost=None):
         '''记录token消耗
         Args:
             gid (int): 群号
             uid (int): 用户号（QQ号）
-            cost (int): 消耗的tokens数
+            token (int): 消耗的tokens数
             api (str): 调用的api名称
+            cost (float, optional): 消耗的成本
         '''
         gid = str(gid)
         uid = str(uid)
@@ -89,8 +90,14 @@ class aichat:
             data[gid][api] = {}
         if uid not in data[gid][api]:
             data[gid][api][uid] = 0
-        data[gid][api][uid] += cost
+        if f'{uid}_dollor' not in data[gid][api]:
+            data[gid][api][f'{uid}_dollor'] = 0
+        data[gid][api][uid] += token
         data[gid][api]['total'] = sum(value for key, value in data[gid][api].items() if key != 'total')
+        if cost is not None:
+            data[gid][api][f'{uid}_dollor'] += cost
+            data[gid][api]['total_dollor'] = sum(value for key, value in data[gid][api].items() if key.endswith('_dollor'))
+        
         with open(token_cost_path, 'w', encoding='utf-8') as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
 
@@ -103,11 +110,12 @@ class aichat:
         gid = str(gid)
         uid = str(uid)
         try:
-            cost = int(usage['total_tokens'])
+            token = int(usage['total_tokens'])
         except:
-            cost = int(usage['completion_tokens']) + int(usage['prompt_tokens'])
-        self.total_tokens = cost
-        await self.token_cost_record(gid, uid, cost, api)
+            token = int(usage['completion_tokens']) + int(usage['prompt_tokens'])
+        cost = float(usage['cost']) if 'cost' in usage else None
+        self.total_tokens = token
+        await self.token_cost_record(gid, uid, token, api, cost)
 
     async def chat_history_record(self, gid, uid, mid, service, messages, assistant_reply):
         '''记录ai对话历史

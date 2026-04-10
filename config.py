@@ -152,6 +152,17 @@ class deepseek_Config(Config):
         self.breasoner_with_system = self._config.getboolean('deepseek', 'breasoner_with_system', fallback=False)
         self.url_special = self._config.get('deepseek', 'url_special', fallback=self._config.get('deepseek', 'url'))
 
+class openrouter_Config(Config):
+    def __init__(self):
+        super().__init__()
+        self.api_key = self._config.get('openrouter', 'api_key')
+        self.model = self._config.get('openrouter','model')
+        self.url = self._config.get('openrouter', 'url')
+        self.temperature = self._float(self._config.get('openrouter', 'temperature'))
+        self.top_p = self._float(self._config.get('openrouter', 'top_p'))
+        self.max_tokens = self._int(self._config.get('openrouter','max_tokens'))
+        self.system = self._config.get('openrouter','system')
+
 
 
 if __name__ == '__main__':
