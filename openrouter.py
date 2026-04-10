@@ -34,7 +34,8 @@ class Openrouter(aichat):
                 'content': msg
             }
         ]
-
+        if self.config.system:
+            self.payload_messages.insert(0, {'role':'system','content': f'{self.config.system}'})
         self.data = {
             "model": self.config.model,
             "messages": self.payload_messages,
