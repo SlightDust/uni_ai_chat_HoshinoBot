@@ -19,9 +19,10 @@ except ImportError:
 class Zhipu(aichat):
     config: zhipu_Config
     
-    def __init__(self):
+    def __init__(self, reasoner=False):
         super().__init__()
         self.config = zhipu_Config()
+        self.reasoner = reasoner
         self.headers = {
             'Authorization': f'Bearer {self.config.api_key}',
             'Content-Type': 'application/json'
@@ -47,6 +48,7 @@ class Zhipu(aichat):
             'temperature': self.config.temperature,
             'top_p': self.config.top_p,
             'user_id': str(uid),
+            'thinking': {"type": "disabled" if not self.reasoner else "enabled"}
         }
 
         if self.config.use_web_search:
