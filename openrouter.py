@@ -17,7 +17,7 @@ except ImportError:
 class Openrouter(aichat):
     config: openrouter_Config
 
-    def __init__(self, reasoner: bool = False, model: str = 'x-ai/grok-4.1-fast'):
+    def __init__(self, reasoner: bool = False, model = ''):
         super().__init__()
         self.config = openrouter_Config()
         self.reasoner = reasoner  # 是否开启推理
@@ -25,7 +25,7 @@ class Openrouter(aichat):
             'Authorization': f'Bearer {self.config.api_key}',
             'Content-Type': 'application/json',
         }
-        self.model = model
+        self.model = model if model else self.config.model
     
     async def asend(self, msg, gid, uid):
         url = self.config.url
