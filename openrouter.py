@@ -2,6 +2,7 @@ import asyncio
 import requests.exceptions
 import json
 import httpx
+import datetime
 
 try:
     from .config import openrouter_Config
@@ -58,6 +59,8 @@ class Openrouter(aichat):
             return None
         print("=============begin 原始响应============")
         print(resp.text)
+        with open(f'openrouter_raw_response_{datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.txt', 'w', encoding='utf-8') as f:
+            f.write(resp.text)
         print("=============end 原始响应============")
         if resp.text.strip() == '':
             self.response = "服务器返回了空白响应，请稍后再试。"
@@ -70,7 +73,16 @@ class Openrouter(aichat):
             self.response = f"发生错误:\ncode: {error_code}\n{error_msg}"
             return resp_j
         else:
-            self.response = resp_j['choices'][0]['message']['content']
+            message = resp_j['choices'][0].get('message')
+            if message:
+                content = message.get("content")
+                images = message.get("images")
+                self.response = content if content else ''
+                if images:
+                    for image in message["images"]:
+                        image_url = image["image_url"]["url"]  # Base64 data URL
+                        self.images.append(image_url)
+
             self.usage = resp_j['usage']
             await self.token_cost_record_new(gid, uid, self.usage, f'openrouter/{self.model}')
             finish_reason = resp_j['choices'][0]['finish_reason']
@@ -80,12 +92,15 @@ class Openrouter(aichat):
                 self.response += "\n\n...输出长度达到了模型上下文长度限制，或达到了 max_tokens 的限制"
             elif finish_reason == 'content_filter':
                 self.response += "\n\n...输出内容因触发过滤策略而被过滤。"
+            
 
 if __name__ == '__main__':
     async def task1():
         print("Task 1 is running")
+        # openrouter = Openrouter(model='openai/gpt-5.4-image-2')
         openrouter = Openrouter()
-        await openrouter.asend('python 怎么让python sum函数返回小数，而不是科学计数法', 112233445566, 123456)
+        # msg = '''生成一个蓝发二次元少女为中国国际航空公司代言的图片，背景中要出现印有国航logo和“中国国际航空公司”字样的飞机，千早愛音站在航站楼内，单肩包上有国航的logo，微笑着比出胜利手势，整体风格要明亮、清新、充满活力。'''
+        await openrouter.asend(msg, 112233445566, 123456)
         print(openrouter.get_response())
         print(openrouter.get_usage())
         print("Task 1 completed")

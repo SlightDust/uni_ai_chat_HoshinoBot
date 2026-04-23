@@ -32,6 +32,8 @@ class aichat:
     prompt_tokens: int       # 提示词tokens
     total_tokens: int = 0    # 总tokens
     payload_messages: list  # 对话列表
+    images: list = []  # 图片链接列表（如果有） url或base64
+
     def __init__(self):
         self.global_config = global_Config()
         self.history_limit = self.global_config.history_limit

@@ -165,3 +165,4 @@ token_cost.json
 test.py
 chat_history.json
 test/md
+openrouter_raw_response*
