@@ -13,6 +13,7 @@ class Config:
     api_key: str
     model: str
     max_tokens: int
+    max_completion_tokens: int
     temperature: float
     top_p: float  
     use_web_search: bool
@@ -163,6 +164,20 @@ class openrouter_Config(Config):
         self.max_tokens = self._int(self._config.get('openrouter','max_tokens'))
         self.system = self._config.get('openrouter','system')
 
+class mimo_Config(Config):
+    def __init__(self):
+        super().__init__()
+        self.api_key = self._config.get('mimo', 'api_key')
+        self.model = self._config.get('mimo','model')
+        self.url = self._config.get('mimo', 'url')
+        self.temperature = self._float(self._config.get('mimo', 'temperature'))
+        self.top_p = self._float(self._config.get('mimo', 'top_p'))
+        self.max_completion_tokens = self._int(self._config.get('mimo','max_completion_tokens'))
+        self.max_tokens = self.max_completion_tokens
+        self.reasoner = self._config.getboolean('mimo','reasoner')
+        self.use_web_search = self._config.getboolean('mimo', 'use_web_search')
+        self.system = self._config.get('mimo','system')
+        
 
 
 if __name__ == '__main__':
