@@ -14,7 +14,7 @@ except ImportError:
     from config import mimo_Config
     from base_chat import aichat
 
-class mimo(aichat):
+class Mimo(aichat):
     def __init__(self):
         super().__init__()
         self.config = mimo_Config()
@@ -101,7 +101,7 @@ class mimo(aichat):
 if __name__ == '__main__':
     async def task1():
         print("Task 1 is running")
-        ai = mimo()
+        ai = Mimo()
         await ai.asend('python 怎么让python sum函数返回小数，而不是科学计数法', 112233445566, 123456)
         print(ai.get_response())
         print(ai.get_usage())
