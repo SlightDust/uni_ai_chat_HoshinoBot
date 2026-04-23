@@ -17,7 +17,7 @@ except ImportError:
 class Openrouter(aichat):
     config: openrouter_Config
 
-    def __init__(self, reasoner: bool = False):
+    def __init__(self, reasoner: bool = False, model: str = 'x-ai/grok-4.1-fast'):
         super().__init__()
         self.config = openrouter_Config()
         self.reasoner = reasoner  # 是否开启推理
@@ -25,6 +25,7 @@ class Openrouter(aichat):
             'Authorization': f'Bearer {self.config.api_key}',
             'Content-Type': 'application/json',
         }
+        self.model = model
     
     async def asend(self, msg, gid, uid):
         url = self.config.url
@@ -37,7 +38,7 @@ class Openrouter(aichat):
         if self.config.system:
             self.payload_messages.insert(0, {'role':'system','content': f'{self.config.system}'})
         self.data = {
-            "model": self.config.model,
+            "model": self.model,
             "messages": self.payload_messages,
             "temperature": self.config.temperature,
             "top_p": self.config.top_p,
@@ -71,7 +72,7 @@ class Openrouter(aichat):
         else:
             self.response = resp_j['choices'][0]['message']['content']
             self.usage = resp_j['usage']
-            await self.token_cost_record_new(gid, uid, self.usage, f'openrouter/{self.config.model}')
+            await self.token_cost_record_new(gid, uid, self.usage, f'openrouter/{self.model}')
             finish_reason = resp_j['choices'][0]['finish_reason']
             if finish_reason == 'stop':
                 pass
