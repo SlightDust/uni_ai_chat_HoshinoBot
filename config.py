@@ -54,6 +54,7 @@ class zhipu_Config(Config):
         self.top_p = self._float(self._config.get('zhipu', 'top_p', fallback=0.7))
         self.system = self._config.get('zhipu','system')
         self.use_web_search = self._config.getboolean('zhipu', 'use_web_search', fallback=True)
+        self.response_format = self._config.get('zhipu', 'response_format', fallback='text')
 
 class zhipuV_Config(Config):    
     def __init__(self):
@@ -152,6 +153,7 @@ class deepseek_Config(Config):
         self.max_tokens = self._int(self._config.get('deepseek','max_tokens'))
         self.breasoner_with_system = self._config.getboolean('deepseek', 'breasoner_with_system', fallback=False)
         self.url_special = self._config.get('deepseek', 'url_special', fallback=self._config.get('deepseek', 'url'))
+        self.response_format = self._config.get('deepseek', 'response_format', fallback='text')
 
 class openrouter_Config(Config):
     def __init__(self):
@@ -163,6 +165,7 @@ class openrouter_Config(Config):
         self.top_p = self._float(self._config.get('openrouter', 'top_p'))
         self.max_tokens = self._int(self._config.get('openrouter','max_tokens'))
         self.system = self._config.get('openrouter','system')
+        self.response_format = self._config.get('openrouter', 'response_format', fallback='text')
 
 class mimo_Config(Config):
     def __init__(self):
@@ -177,6 +180,7 @@ class mimo_Config(Config):
         self.reasoner = self._config.getboolean('mimo','reasoner')
         self.use_web_search = self._config.getboolean('mimo', 'use_web_search')
         self.system = self._config.get('mimo','system')
+        self.response_format = self._config.get('mimo', 'response_format', fallback='text')
         
 
 

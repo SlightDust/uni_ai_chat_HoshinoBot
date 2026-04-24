@@ -48,7 +48,10 @@ class Zhipu(aichat):
             'temperature': self.config.temperature,
             'top_p': self.config.top_p,
             'user_id': str(uid),
-            'thinking': {"type": "disabled" if not self.reasoner else "enabled"}
+            'thinking': {"type": "disabled" if not self.reasoner else "enabled"},
+            'response_format': {
+                'type': self.config.response_format if self.config.response_format in ['text', 'json_object'] else 'text'
+            },
         }
 
         if self.config.use_web_search:
@@ -163,10 +166,10 @@ async def url2b64(url, timeout=10, b_use_system_proxy=False):
 if __name__ == '__main__':
     async def task1():
         print("Task 1 is running")
-        # zhipu = Zhipu()
-        # await zhipu.asend('非对称加密在生活中有哪些常见应用', 112233445566, 123456)
-        zhipu = ZhipuV()
-        await zhipu.asend('怎么理解这张图',"", 112233445566, 123456)
+        zhipu = Zhipu()
+        await zhipu.asend('非对称加密在生活中有哪些常见应用', 112233445566, 123456)
+        # zhipu = ZhipuV()
+        # await zhipu.asend('怎么理解这张图',"", 112233445566, 123456)
         print(zhipu.get_response())
         print(zhipu.get_usage())
         print("Task 1 completed")

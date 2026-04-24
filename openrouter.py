@@ -45,7 +45,10 @@ class Openrouter(aichat):
             "top_p": self.config.top_p,
             "max_tokens": self.config.max_tokens,
             "stream": False,
-            "reasoning": {"enabled": self.reasoner}
+            "reasoning": {"enabled": self.reasoner},
+            'response_format': {
+                'type': self.config.response_format if self.config.response_format in ['text', 'json_object'] else 'text'
+            },
         }
 
         try:

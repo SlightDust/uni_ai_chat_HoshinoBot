@@ -60,7 +60,7 @@ class Deepseek(aichat):
             'temperature': self.config.temperature,
             'top_p': self.config.top_p,
             'response_format': {
-                'type': 'text'
+                'type': self.config.response_format if self.config.response_format in ['text', 'json_object'] else 'text'
             },
             'stop': None,
             'messages': self.payload_messages,

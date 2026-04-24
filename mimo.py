@@ -50,7 +50,10 @@ class Mimo(aichat):
             "top_p": self.config.top_p,
             "max_completion_tokens": self.config.max_tokens,
             "stream": False,
-            'thinking': {"type": "disabled" if not self.thinking else "enabled"}
+            'thinking': {"type": "disabled" if not self.thinking else "enabled"},
+            'response_format': {
+                'type': self.config.response_format if self.config.response_format in ['text', 'json_object'] else 'text'
+            },
         }
         if self.config.use_web_search:
             self.data.update({"tools":[{"type":"web_search"}]})
