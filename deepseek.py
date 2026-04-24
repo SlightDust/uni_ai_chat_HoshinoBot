@@ -52,7 +52,7 @@ class Deepseek(aichat):
             self.payload_messages = messages
         await self.chat_history_limiter()
         self.data = {
-            'model': self.config.model if not self.reasoner else self.config.model_reasoner,
+            'model': self.config.model, # if not self.reasoner else self.config.model_reasoner,
             'stream': self.config.stream,
             'frequency_penalty': self.config.frequency_penalty,
             'max_tokens': self.config.max_tokens,
@@ -63,7 +63,8 @@ class Deepseek(aichat):
                 'type': 'text'
             },
             'stop': None,
-            'messages': self.payload_messages
+            'messages': self.payload_messages,
+            'thinking': {"type": "enabled" if self.reasoner else "disabled"}
         }
         try:
             # resp = await aiorequests.post(url, headers=self.headers, data=json.dumps(self.data), timeout = 360)
