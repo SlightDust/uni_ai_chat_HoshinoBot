@@ -2,7 +2,6 @@ import asyncio
 import requests.exceptions
 import json
 import httpx
-import datetime
 
 try:
     from .config import openrouter_Config
@@ -62,8 +61,6 @@ class Openrouter(aichat):
             return None
         print("=============begin 原始响应============")
         print(resp.text)
-        with open(f'openrouter_raw_response_{datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.txt', 'w', encoding='utf-8') as f:
-            f.write(resp.text)
         print("=============end 原始响应============")
         if resp.text.strip() == '':
             self.response = "服务器返回了空白响应，请稍后再试。"
